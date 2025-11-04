@@ -1,0 +1,13 @@
+version: 1
+labels:
+  - id: DINING
+    keywords: ["starbucks","cafe","domino","zomato","swiggy","kfc","mcd"]
+  - id: GROCERIES
+    keywords: ["bigbasket","dmart","lidl","aldi","more","reliance fresh","7-eleven"]
+  - id: FUEL
+    keywords: ["shell","esso","bpcl","hpcl","iocl","indianoil"]
+  - id: UTILITIES
+    keywords: ["electric","water bill","gas bill","telekom","vodafone","jio","airtel"]
+  - id: SHOPPING
+    keywords: ["amazon","flipkart","myntra","ikea","decathlon"]
+fallback: OTHER
