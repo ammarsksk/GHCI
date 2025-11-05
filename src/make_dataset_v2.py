@@ -85,17 +85,43 @@ def patterns(label, merch, amt, city, bank, vpa, last4, ref, direction, currency
       f"{bank} {direction} {merch} {amt} {currency}",
       f"{merch} {city} {date} {amt} AUTH {rnd(100000,999999)}",
     ]
-    # class-specific phrases
-    if label.startswith("UTILITIES"): base += [f"{merch} BILL PAYMENT {amt}", f"{merch} RECHARGE {amt}"]
-    if label=="FUEL": base += [f"{merch} FUEL SURCHARGE {round(float(amt.split('.')[0])*0.025,2)} REVERSAL"]
-    if label.startswith("SHOPPING"): base += [f"{merch} CASHBACK -{round(float(amt.split('.')[0]) * 0.1,2)}", f"{merch} REFUND -{amt}"]
+
+    def add_hint(ok, txt):
+        if ok: base.append(txt)
+
+    # --- add class-unique hints with ~60% probability for weaker classes ---
+    p = 0.6
+    if label == "SHOPPING_ECOM":
+        add_hint(random.random()<p, f"{merch} ORDER ID {ref}")
+        add_hint(random.random()<p, f"{merch} FULFILLED BY AMAZON")
+        add_hint(random.random()<p, f"{merch} MARKETPLACE")
+    if label == "FUEL":
+        add_hint(random.random()<p, f"{merch} PETROL PUMP {city}")
+        add_hint(random.random()<p, f"FUEL SURCHARGE {round(float(amt.split('.')[0])*0.025,2)} REVERSAL")
+    if label == "UTILITIES_POWER":
+        add_hint(random.random()<p, f"{merch} ELECTRICITY BILL PAYMENT")
+        add_hint(random.random()<p, f"{merch} EB BILL {city}")
+    if label == "UTILITIES_TELECOM":
+        add_hint(random.random()<p, f"{merch} PREPAID RECHARGE {amt}")
+        add_hint(random.random()<p, f"{merch} DATA PACK {rnd(1,5)}GB")
+    if label == "UTILITIES_WATER_GAS":
+        add_hint(random.random()<p, f"{merch} WATER BILL {amt}")
+        add_hint(random.random()<p, f"{merch} GAS BILL {amt}")
+    if label == "FEES":
+        add_hint(True,               f"{merch} CONVENIENCE FEE")   # always one explicit fee cue
+        add_hint(random.random()<p, f"{merch} SERVICE CHARGE")
+        add_hint(random.random()<p, f"{merch} PROCESSING FEE")
+
+    # class-specific extras already present
     if label=="DINING": base += [f"{merch} TIP {round(float(amt.split('.')[0])*0.05,2)}"]
+    if label.startswith("SHOPPING"): base += [f"{merch} CASHBACK -{round(float(amt.split('.')[0]) * 0.1,2)}", f"{merch} REFUND -{amt}"]
     if label=="TRAVEL": base += [f"{merch} TICKET {ref} {amt}"]
     if label=="MOBILITY": base += [f"{merch} RIDE {ref} {amt}"]
     if label=="HEALTH": base += [f"{merch} OPD {ref} {amt}", f"{merch} PHARMACY {amt}"]
     if label=="ENTERTAINMENT": base += [f"{merch} SUBSCRIPTION {amt}"]
-    if label=="FEES": base += [f"{merch} CHARGE {amt}", f"{merch} CONVENIENCE FEE {round(float(amt.split('.')[0])*0.02,2)}"]
+
     return [noise_text(s) for s in base]
+
 
 def split_merchants(train_ratio=0.75):
     train, test = {}, {}
