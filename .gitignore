@@ -1,13 +1,17 @@
+@'
 # Python
-__pycache__/
-*.py[cod]
 .venv/
-.env
+__pycache__/
+*.pyc
 
-# OS
-.DS_Store
-
-# Artifacts
+# Local data & artifacts
+data/
 models/
-data/*.parquet
 reports/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+'@ | Set-Content .gitignore
