@@ -1,13 +1,484 @@
-version: 1
+version: 2
+name: txcat-en-in
+locale: en_IN
+currency: INR
+last_updated: 2024-05-01
+maintainers:
+  - name: Core Taxonomy Team
+    contact: taxonomists@example.com
+notes: |
+  This taxonomy enumerates the most common consumer banking transaction
+  categories observed in Indian retail banking feeds. Each label lists the
+  search keywords that power the deterministic rules engine along with
+  contextual metadata that downstream review tools can surface to analysts.
 labels:
   - id: DINING
-    keywords: ["starbucks","cafe","domino","zomato","swiggy","kfc","mcd"]
+    display_name: Dining & Food Delivery
+    description: Cafes, restaurants, fast food, and meal delivery platforms.
+    keywords:
+      - cafe
+      - café
+      - coffee
+      - starbucks
+      - domino
+      - dominos
+      - pizza hut
+      - zomato
+      - swiggy
+      - kfc
+      - mcd
+      - mc donalds
+      - burger king
+      - subway
+      - biryani
+      - restaurant
+      - eatery
+      - takeaway
+    example_merchants:
+      - Starbucks India
+      - Zomato
+      - McDonald's
+      - Swiggy
   - id: GROCERIES
-    keywords: ["bigbasket","dmart","lidl","aldi","more","reliance fresh","7-eleven"]
+    display_name: Groceries & Daily Essentials
+    description: Supermarkets, kirana stores, and recurring grocery delivery.
+    keywords:
+      - grocery
+      - grocer
+      - supermarket
+      - hypermarket
+      - bigbasket
+      - big basket
+      - dmart
+      - reliance fresh
+      - reliance smart
+      - natures basket
+      - nature's basket
+      - more retail
+      - fresh to home
+      - fresh2home
+      - lidl
+      - aldi
+      - spar
+      - 7-eleven
+      - spencer's
+      - mart
+      - bazaar
+    example_merchants:
+      - BigBasket
+      - DMart Ready
+      - Reliance Fresh
+      - Nature's Basket
   - id: FUEL
-    keywords: ["shell","esso","bpcl","hpcl","iocl","indianoil"]
-  - id: UTILITIES
-    keywords: ["electric","water bill","gas bill","telekom","vodafone","jio","airtel"]
-  - id: SHOPPING
-    keywords: ["amazon","flipkart","myntra","ikea","decathlon"]
+    display_name: Fuel & Gas Stations
+    description: Petrol pumps, diesel stations, CNG filling stations, and surcharges.
+    keywords:
+      - fuel
+      - petrol
+      - diesel
+      - petrol pump
+      - gas station
+      - shell
+      - esso
+      - iocl
+      - indian oil
+      - bpcl
+      - bharat petroleum
+      - hpcl
+      - hindustan petroleum
+      - cng
+      - fuel surcharge
+      - surcharge reversal
+    example_merchants:
+      - Indian Oil Corporation
+      - Bharat Petroleum
+      - Shell India
+  - id: UTILITIES_POWER
+    display_name: Utilities – Electricity
+    description: Electricity distribution companies and power bill payments.
+    keywords:
+      - electricity
+      - electric bill
+      - power bill
+      - discom
+      - bses
+      - tata power
+      - adani electricity
+      - torrent power
+      - cesc
+      - bescom
+      - kseb
+      - pspcl
+      - tpddl
+      - wbsedcl
+      - ugvcl
+      - mgvcl
+      - dgvcl
+      - mseb
+      - mppkvvcl
+      - dvvnl
+      - apdcl
+    example_merchants:
+      - BSES Rajdhani Power
+      - Tata Power Delhi Distribution
+      - Adani Electricity Mumbai
+  - id: UTILITIES_TELECOM
+    display_name: Utilities – Telecom & Internet
+    description: Mobile, broadband, fibre, and prepaid/postpaid recharge payments.
+    keywords:
+      - telecom
+      - telekom
+      - recharge
+      - prepaid
+      - postpaid
+      - data pack
+      - mobile bill
+      - broadband
+      - fiber
+      - fibre
+      - airtel
+      - jio
+      - vodafone
+      - vi
+      - bsnl
+      - mtnl
+      - hathway
+      - act fibernet
+      - you broadband
+    example_merchants:
+      - Airtel Payments
+      - Jio Platforms
+      - Vodafone Idea
+      - ACT Fibernet
+  - id: UTILITIES_WATER_GAS
+    display_name: Utilities – Water & Piped Gas
+    description: Municipal water boards and piped natural gas distributors.
+    keywords:
+      - water bill
+      - water board
+      - jal board
+      - djb
+      - bwssb
+      - mjp
+      - png
+      - gas bill
+      - piped gas
+      - igl
+      - indraprastha gas
+      - mahanagar gas
+      - gail gas
+      - aadhaar gas
+      - mnng
+    example_merchants:
+      - Delhi Jal Board
+      - Indraprastha Gas Limited
+      - Mahanagar Gas Limited
+  - id: SHOPPING_ECOM
+    display_name: Shopping – E-commerce Marketplaces
+    description: Online marketplaces, general online retail, and order fulfilment.
+    keywords:
+      - amazon
+      - amzn
+      - azn
+      - flipkart
+      - fkrt
+      - myntra
+      - ajio
+      - nykaa
+      - meesho
+      - tatacliq
+      - order id
+      - shipment
+      - delivered
+      - prime
+      - marketplace
+      - cart
+      - checkout
+    example_merchants:
+      - Amazon India
+      - Flipkart
+      - Myntra
+      - Nykaa
+  - id: SHOPPING_ELECTRONICS
+    display_name: Shopping – Electronics & Appliances
+    description: Electronics retail chains, gadget stores, and manufacturer outlets.
+    keywords:
+      - electronics
+      - gadget
+      - appliance
+      - croma
+      - reliance digital
+      - apple store
+      - imagine store
+      - mi store
+      - oneplus
+      - samsung
+      - vivo
+      - boat
+      - noise
+      - sony center
+      - lg showroom
+    example_merchants:
+      - Croma
+      - Reliance Digital
+      - Apple Store
+      - OnePlus Experience Store
+  - id: TRAVEL
+    display_name: Travel – Flights & Rail
+    description: Airlines, railways, OTA bookings, and associated ticketing fees.
+    keywords:
+      - airline
+      - flight
+      - indigo
+      - air india
+      - vistara
+      - spicejet
+      - goair
+      - akasa
+      - cleartrip
+      - makemytrip
+      - goibibo
+      - irctc
+      - rail ticket
+      - boarding
+      - pnr
+      - ticket booking
+    example_merchants:
+      - IndiGo
+      - Air India
+      - Indian Railways
+      - MakeMyTrip
+  - id: MOBILITY
+    display_name: Mobility – Ride Hailing & Transit
+    description: App cabs, metro cards, bike taxis, and driver tips.
+    keywords:
+      - uber
+      - ola
+      - rapido
+      - indrive
+      - ride
+      - driver tip
+      - cab fare
+      - taxi
+      - metro card
+      - namma metro
+      - dmrc
+      - mumbai metro
+      - lrt
+      - transit
+    example_merchants:
+      - Uber India
+      - Ola Cabs
+      - Rapido
+      - Delhi Metro Rail Corporation
+  - id: HEALTH
+    display_name: Health & Wellness
+    description: Hospitals, clinics, pharmacies, labs, and telemedicine services.
+    keywords:
+      - hospital
+      - clinic
+      - pharmacy
+      - chemist
+      - medicine
+      - opd
+      - diagnostic
+      - lab test
+      - prescription
+      - apollo
+      - fortis
+      - max healthcare
+      - pharmeasy
+      - 1mg
+      - medplus
+      - practo
+    example_merchants:
+      - Apollo Hospitals
+      - Fortis Healthcare
+      - PharmEasy
+      - 1mg
+  - id: ENTERTAINMENT
+    display_name: Entertainment & Media
+    description: Streaming platforms, cinemas, gaming, and subscriptions for leisure.
+    keywords:
+      - bookmyshow
+      - cinema
+      - movie ticket
+      - theatre
+      - subscription
+      - ott
+      - netflix
+      - disney
+      - hotstar
+      - sony liv
+      - zee5
+      - prime video
+      - spotify
+      - apple music
+      - steam
+      - playstation
+      - season pass
+    example_merchants:
+      - BookMyShow
+      - Netflix
+      - Disney+ Hotstar
+      - Sony LIV
+  - id: EDUCATION
+    display_name: Education & Learning
+    description: Tuition payments, online courses, test prep, and school fees.
+    keywords:
+      - school fee
+      - tuition
+      - college
+      - university
+      - coaching
+      - byjus
+      - byju's
+      - unacademy
+      - vedantu
+      - coursera
+      - udemy
+      - skillshare
+      - khan academy
+      - test series
+      - exam fee
+    example_merchants:
+      - Byju's
+      - Unacademy
+      - Coursera
+      - Local Schools
+  - id: FINANCIAL_SERVICES
+    display_name: Financial Services & Charges
+    description: Insurance premiums, mutual funds, brokerage, convenience fees, and bank charges.
+    keywords:
+      - insurance
+      - premium
+      - policybazaar
+      - lic
+      - sbi life
+      - hdfc life
+      - icici prudential
+      - mutual fund
+      - sip
+      - broker
+      - demat
+      - convenience fee
+      - processing fee
+      - platform fee
+      - chargeback
+      - reversal
+      - fastag
+      - service charge
+    example_merchants:
+      - LIC of India
+      - PolicyBazaar
+      - Zerodha
+      - Groww
+  - id: FEES
+    display_name: Fees & Adjustments
+    description: Network charges, card convenience fees, platform fees, and surcharge reversals.
+    keywords:
+      - convenience fee
+      - processing fee
+      - platform fee
+      - surcharge
+      - surcharge reversal
+      - service charge
+      - chargeback
+      - dispute
+      - charge reversal
+      - fee refund
+      - fastag
+    example_merchants:
+      - NPCI
+      - FASTag Issuer
+      - Payment Gateway
+      - Card Network
+  - id: HOME_IMPROVEMENT
+    display_name: Home Improvement & Furnishings
+    description: Furniture, hardware, appliances, and home décor merchants.
+    keywords:
+      - ikea
+      - hometown
+      - pepperfry
+      - urban ladder
+      - home centre
+      - home center
+      - decor
+      - furnishing
+      - hardware
+      - paints
+      - asian paints
+      - berger paints
+      - plywood
+      - tile
+      - sanitaryware
+    example_merchants:
+      - IKEA India
+      - Pepperfry
+      - Asian Paints
+      - Urban Ladder
+  - id: SUBSCRIPTIONS
+    display_name: Digital Subscriptions & SaaS
+    description: Recurring software, productivity, and cloud subscriptions.
+    keywords:
+      - subscription
+      - renewal
+      - auto debit
+      - saas
+      - adobe
+      - microsoft
+      - 365
+      - google workspace
+      - notion
+      - slack
+      - zoom
+      - dropbox
+      - aws
+      - azure
+      - linode
+      - digital ocean
+    example_merchants:
+      - Microsoft 365
+      - Google Workspace
+      - Adobe Creative Cloud
+      - Zoom
+  - id: CHARITY
+    display_name: Charity & Donations
+    description: NGO, charity, and donation payments including crowdfunding.
+    keywords:
+      - donation
+      - charity
+      - ngo
+      - giveindia
+      - milaap
+      - ketto
+      - crowdfunding
+      - relief fund
+      - foundation
+      - trust
+    example_merchants:
+      - GiveIndia
+      - Milaap
+      - Ketto
+      - Akshaya Patra Foundation
+  - id: INCOME
+    display_name: Income & Refunds
+    description: Salary credits, tax refunds, expense reimbursements, and cashback adjustments.
+    keywords:
+      - salary
+      - payroll
+      - stipend
+      - reimbursement
+      - refund
+      - cashback
+      - reversal
+      - credit salary
+      - treasury
+      - income tax
+      - tds refund
+    example_merchants:
+      - Employer Payroll
+      - Income Tax Department
+      - Corporate Expense Desk
 fallback: OTHER
+fallback_description: Miscellaneous transactions that do not match any specific category.
