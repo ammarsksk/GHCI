@@ -1,20 +1,39 @@
-@'
-# Python
-.venv/
-__pycache__/
-*.pyc
-
-# Local data & artifacts
-data/
-!data/
-!data/*.csv
-!data/README.txt
-models/
-reports/
-
-# OS / Editor
+# OS-specific
 .DS_Store
 Thumbs.db
+
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dylib
+*.egg-info/
+.eggs/
+build/
+dist/
+*.log
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+*.env
+
+# IDE/editor
 .vscode/
 .idea/
-'@ | Set-Content .gitignore
+
+# Project data and large artifacts
+data/
+reports/
+models/
+*.joblib
+
+# Allow placeholder docs inside ignored dirs (optional)
+!data/README.txt
+!reports/README.md
+!models/README.md
+!**/.gitkeep

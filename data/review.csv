@@ -1,0 +1,20 @@
+raw_text,label,pred,pred_proba,explain
+visa qmg chennai ref card674080,HEALTH,SHOPPING_ECOM,0.2780447036105353,w__visa:0.23; c__674:0.03; c__car:0.01; c__ car:0.01; c__ ca:0.01; c__card6:0.00
+MASTERCARD GROqW CHENNAI REF CARD666651,FINANCIAL_SERVICES,FINANCIAL_SERVICES,0.519900560962496,w__mastercard:0.32; c__ gro:0.15; c__gro:0.15; c__ gr:0.15; c__aste:0.01; c__maste:0.01
+MASTERCARD xMAZON INDIA KOCHI REF CARD155364,SHOPPING_ECOM,MOBILITY,0.48878633064901195,w__mastercard:0.21; w__kochi:0.11; w__india:0.06; c__ ca:0.03; c__card:0.01; c__car:0.01
+MASTERCARD UqER INDIA CHENNAI REF CARD316296,MOBILITY,MOBILITY,0.5145185179369836,w__mastercard:0.39; w__india:0.12; c__er :0.08; c__ ca:0.03; c__card:0.01; c__car:0.01
+RUPAY  NYKzA  HYDERABAD  REF  CARD124670,SHOPPING_ECOM,SHOPPING_ECOM,0.5907339204429286,w__rupay:0.60; c__ ny:0.19; c__ nyk:0.19; c__nyk:0.19; c__car:0.01; c__ car:0.01
+IMPS IMPS9924000 TO Amaxon India PUNE,SHOPPING_ECOM,TRAVEL,0.40934316463840037,c__ indi:0.05; c__ndi:0.04; c__indi:0.04; c__ ind:0.04; c__ind:0.04; c__ in:0.04
+RUPAYx1MG KOLKATA REF CARD692672,HEALTH,SUBSCRIPTIONS,0.20087254369458887,c__926:0.02; c__1mg :0.01; c__mg :0.01; c__1mg:0.01; c__ rupa:0.01; c__rupa:0.01
+MASTERCARD NYKzA MUMBAI REF CARD384327,SHOPPING_ECOM,SHOPPING_ECOM,0.543799955311963,w__mastercard:0.34; c__ ny:0.19; c__ nyk:0.19; c__nyk:0.19; c__432:0.02; c__car:0.02
+VISA RAPqDO JAIPUR REF CARD972950,MOBILITY,FEES,0.525328706279835,w__visa:0.49; w__jaipur:0.06; c__card:0.03; c__ card:0.03; c__ car:0.03; c__ard:0.03
+KOTAK  NETBANK  ZxRODHA  FASTAG  NB1501724,FINANCIAL_SERVICES,FEES,0.5323535807281291,w__fastag:0.99; w__netbank:0.22; w__kotak netbank:0.13; c__ fas:0.06; c__ fast:0.06; c__fas:0.06
+visa ubxr india jaipur ref card586224,MOBILITY,MOBILITY,0.44347003060363793,c__ ub:0.14; w__india:0.06; c__ ca:0.03; w__india jaipur:0.02; c__xr :0.01; c__card:0.01
+MASTERCARD UqER INDIA BENGALURU REF CARD909080,MOBILITY,MOBILITY,0.5350057513476294,w__mastercard:0.39; w__india:0.12; c__er :0.08; c__ ca:0.03; c__080:0.01; c__card:0.01
+MASTERCARD SHzLL INDIA KOCHI REF CARD190160,FUEL,FUEL,0.524069866616545,w__india kochi:0.31; w__india:0.14; c__ sh:0.12; c__ll :0.10; c__901:0.03; c__india:0.02
+MASTERCARD UBxR INDIA PUNE REF CARD669943,MOBILITY,MOBILITY,0.5485533013771964,w__mastercard:0.39; c__ ub:0.13; w__india:0.12; c__ ca:0.03; c__xr :0.01; c__card:0.01
+rupay nyxaa jaipur ref card509089,SHOPPING_ECOM,SHOPPING_ECOM,0.48145621002532446,w__rupay:0.42; c__ ny:0.19; c__aa :0.18; c__card5:0.01; c__ard5:0.01; c__rd5:0.01
+amex  uqer  india  bengaluru  ref  card918648,MOBILITY,MOBILITY,0.3884298522948582,w__india:0.12; c__er :0.08; c__ ca:0.03; c__ard91:0.02; c__d91:0.02; c__rd91:0.02
+VISA AMAqON INDIA DELHI REF CARD868146,SHOPPING_ECOM,FUEL,0.4664466841828121,w__india:0.26; w__visa:0.22; c__on :0.03; c__india:0.02; c__ndia:0.02; c__dia:0.02
+POS KOCHI UqER INDIA REF POS503884,MOBILITY,FUEL,0.5220688904387311,w__india:0.25; c__ pos:0.03; c__pos:0.03; c__884:0.03; c__ po:0.03; c__884 :0.02
+MASTERCARD  CxOMA  DELHI  REF  CARD382942,SHOPPING_ELECTRONICS,SHOPPING_ECOM,0.24709574171676038,w__mastercard:0.34; c__car:0.02; c__ ma:0.02; c__ car:0.01; c__ ca:0.01; c__card:0.01

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import argparse
 import csv
+import math
 import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 RANDOM_SEED = 20240523
 random.seed(RANDOM_SEED)
@@ -152,6 +154,42 @@ AMOUNT_RULES = {
 
 CREDIT_LABELS = {"INCOME"}
 
+# Realistic class frequency priors (normalized at runtime for labels present)
+LABEL_WEIGHTS: Dict[str, float] = {
+    "GROCERIES": 0.14,
+    "DINING": 0.13,
+    "MOBILITY": 0.11,
+    "UTILITIES_TELECOM": 0.10,
+    "SHOPPING_ECOM": 0.09,
+    "FUEL": 0.07,
+    "HEALTH": 0.06,
+    "TRAVEL": 0.06,
+    "ENTERTAINMENT": 0.06,
+    "UTILITIES_POWER": 0.04,
+    "UTILITIES_WATER_GAS": 0.03,
+    "FINANCIAL_SERVICES": 0.03,
+    "FEES": 0.03,
+    "HOME_IMPROVEMENT": 0.02,
+    "SUBSCRIPTIONS": 0.02,
+    "CHARITY": 0.01,
+    "INCOME": 0.02,
+}
+
+# Account type distribution
+ACCOUNT_TYPE_WEIGHTS: List[Tuple[str, float]] = [
+    ("SAVINGS", 0.58),
+    ("CURRENT", 0.22),
+    ("CREDIT_CARD", 0.20),
+]
+
+# Noise knobs (can be overridden via CLI)
+DEFAULT_NOISE_RATIO = 0.18  # fraction of rows to perturb
+LABEL_NOISE_RATIO = 0.02    # fraction to flip to another label
+CHANNEL_NOISE_RATIO = 0.04  # fraction to choose non-canonical channel
+DATE_ANOMALY_RATIO = 0.02   # fraction to invert or delay posted_at unusually
+MISSING_VALUE_RATIO = 0.03  # individual field missingness probability (on noisy rows)
+CURRENCY_ALT_RATIO = 0.03   # on noisy rows, chance to use non-INR currency
+
 
 def _triangular_amount(cat_id: str) -> float:
     low, high = AMOUNT_RULES.get(cat_id, (150, 5000))
@@ -227,48 +265,172 @@ def _choose(iterable: Iterable[str], fallback: str) -> str:
     items = [item for item in iterable if item]
     return random.choice(items) if items else fallback
 
+def _weighted_account_type() -> str:
+    r = random.random()
+    acc = 0.0
+    for name, w in ACCOUNT_TYPE_WEIGHTS:
+        acc += w
+        if r <= acc:
+            return name
+    return ACCOUNT_TYPE_WEIGHTS[-1][0]
 
-def _generate_rows(labels: List[Label], per_label: int = 220) -> List[Dict[str, object]]:
+
+def _apply_row_noise(row: Dict[str, object], label_ids: List[str], noise_ratio: float) -> None:
+    if random.random() >= noise_ratio:
+        return
+
+    # Minor casing/spacing glitches in merchant and narrative
+    def _glitch(s: object) -> str:
+        t = s if isinstance(s, str) else ("" if s is None else str(s))
+        r = random.random()
+        if r < 0.25:
+            t = t.upper()
+        elif r < 0.50:
+            t = t.lower()
+        if random.random() < 0.20:
+            t = t.replace(" ", "  ")
+        if random.random() < 0.10 and len(t) > 6:
+            i = random.randint(1, len(t) - 2)
+            t = t[:i] + random.choice("qxz") + t[i + 1 :]
+        return t
+
+    # Some rows use alternative currency or unusual amounts
+    if random.random() < CURRENCY_ALT_RATIO:
+        row["currency"] = random.choice(["USD", "EUR"])  # rare FX
+    # Outliers: occasionally 2-5x typical amounts (positive values only)
+    if random.random() < 0.05:
+        try:
+            amt = float(str(row.get("amount", "0")).replace(",", ""))
+            bump = random.uniform(2.0, 5.0)
+            row["amount"] = f"{amt * bump:.2f}"
+        except Exception:
+            pass
+
+    # Channel noise: choose any channel sometimes
+    if random.random() < CHANNEL_NOISE_RATIO:
+        row["channel"] = random.choice(
+            list({c for lst in CHANNEL_MAP.values() for c in lst} | {"NEFT", "IMPS", "SALARY"})
+        )
+
+    # Date anomalies: posted_at before value_date or large delay
+    if random.random() < DATE_ANOMALY_RATIO:
+        try:
+            v = datetime.strptime(str(row["value_date"]), "%Y-%m-%d")
+            if random.random() < 0.5:
+                p = v - timedelta(days=random.randint(1, 2))
+            else:
+                p = v + timedelta(days=random.randint(7, 14))
+            row["posted_at"] = p.strftime("%Y-%m-%d")
+        except Exception:
+            pass
+
+    # Refund-like credit in non-income categories
+    if row.get("dr_cr") == "DR" and random.random() < 0.05:
+        row["dr_cr"] = "CR"
+        row["narrative"] = f"REFUND {row['narrative']}"
+
+    # Missingness for some non-critical fields
+    for key in ["merchant_name", "city", "reference", "keyword_hit"]:
+        if random.random() < MISSING_VALUE_RATIO:
+            row[key] = "" if random.random() < 0.7 else None
+
+    # Label noise: flip to another category id occasionally
+    if random.random() < LABEL_NOISE_RATIO and label_ids:
+        new_id = random.choice(label_ids)
+        row["category_id"] = new_id
+        # do not change display name often to simulate inconsistencies
+
+    # Glitchy text fields last
+    row["merchant_name"] = _glitch(row.get("merchant_name", ""))
+    row["narrative"] = _glitch(row.get("narrative", ""))
+
+
+def _label_weight_vector(labels: List[Label]) -> List[float]:
+    ws = [LABEL_WEIGHTS.get(lbl.id, 0.03) for lbl in labels]
+    s = sum(ws)
+    if s <= 0:
+        return [1.0 / len(labels)] * len(labels)
+    return [w / s for w in ws]
+
+
+def _generate_rows(labels: List[Label], total_rows: int, noise_ratio: float = DEFAULT_NOISE_RATIO) -> List[Dict[str, object]]:
     rows: List[Dict[str, object]] = []
-    for label in labels:
+    if not labels:
+        return rows
+
+    weights = _label_weight_vector(labels)
+    # Compute integer allocation per label, distribute remainder
+    alloc = [int(total_rows * w) for w in weights]
+    remainder = total_rows - sum(alloc)
+    for i in random.sample(range(len(alloc)), k=remainder):
+        alloc[i] += 1
+
+    # Track used transaction_ids to avoid collisions
+    used_ids: set[str] = set()
+
+    def _unique_txid() -> str:
+        while True:
+            tx = f"TX{random.randint(10**9, 10**10 - 1)}"
+            if tx not in used_ids:
+                used_ids.add(tx)
+                return tx
+
+    all_label_ids = [lbl.id for lbl in labels]
+
+    for label, n_rows in zip(labels, alloc):
         merchants = label.example_merchants or [label.display_name or label.id]
-        for _ in range(per_label):
-            channel = random.choice(CHANNEL_MAP.get(label.id, ["CARD", "UPI", "NETBANKING"]))
+        for _ in range(n_rows):
+            # Occasionally pick a non-canonical channel
+            canonical_channels = CHANNEL_MAP.get(label.id, ["CARD", "UPI", "NETBANKING"])
+            if random.random() < CHANNEL_NOISE_RATIO:
+                channel = random.choice(list({c for lst in CHANNEL_MAP.values() for c in lst} | {"NEFT", "IMPS", "SALARY"}))
+            else:
+                channel = random.choice(canonical_channels)
+
             city = random.choice(CITY_POOL)
             keyword = _choose(label.keywords, label.id.lower())
             merchant = _choose(merchants, label.display_name or label.id.title())
             amount = _triangular_amount(label.id)
+            if random.random() < 0.03:
+                # Introduce occasional tiny or zero amounts
+                amount = round(random.choice([0.0, random.uniform(1.0, 25.0)]), 2)
+
             credit_or_debit = "CR" if label.id in CREDIT_LABELS else "DR"
+            # refund-like flips handled in noise function
             value_date, posted_at = _random_dates()
             reference = _reference(channel)
-            rows.append(
-                {
-                    "transaction_id": f"TX{random.randint(10**9, 10**10 - 1)}",
-                    "value_date": value_date,
-                    "posted_at": posted_at,
-                    "amount": f"{amount:.2f}",
-                    "currency": "INR",
-                    "dr_cr": credit_or_debit,
-                    "merchant_name": merchant,
-                    "reference": reference,
-                    "narrative": _narrative(channel, merchant, keyword, city, reference),
-                    "channel": channel,
-                    "account_type": random.choice(ACCOUNT_TYPES),
-                    "city": city,
-                    "keyword_hit": keyword,
-                    "category_id": label.id,
-                    "category_display_name": label.display_name or label.id.title(),
-                }
-            )
+            row = {
+                "transaction_id": _unique_txid(),
+                "value_date": value_date,
+                "posted_at": posted_at,
+                "amount": f"{amount:.2f}",
+                "currency": "INR",
+                "dr_cr": credit_or_debit,
+                "merchant_name": merchant,
+                "reference": reference,
+                "narrative": _narrative(channel, merchant, keyword, city, reference),
+                "channel": channel,
+                "account_type": _weighted_account_type(),
+                "city": city,
+                "keyword_hit": keyword,
+                "category_id": label.id,
+                "category_display_name": label.display_name or label.id.title(),
+            }
+            _apply_row_noise(row, all_label_ids, noise_ratio)
+            rows.append(row)
+
     random.shuffle(rows)
     return rows
 
 
-def write_dataset(rows: List[Dict[str, object]], train_ratio: float = 0.8) -> None:
+def write_dataset(rows: List[Dict[str, object]], train_size: int, test_size: int) -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    split_index = int(len(rows) * train_ratio)
-    train_rows = rows[:split_index]
-    test_rows = rows[split_index:]
+    total = train_size + test_size
+    if len(rows) < total:
+        raise ValueError(f"Not enough rows generated ({len(rows)}) for requested total {total}")
+
+    train_rows = rows[:train_size]
+    test_rows = rows[train_size : train_size + test_size]
     fieldnames = list(train_rows[0].keys())
 
     with (DATA_DIR / "train.csv").open("w", newline="", encoding="utf-8") as handle:
@@ -285,9 +447,18 @@ def write_dataset(rows: List[Dict[str, object]], train_ratio: float = 0.8) -> No
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser(description="Generate synthetic transaction datasets with realistic noise")
+    ap.add_argument("--train-size", type=int, default=100_000, help="Number of rows for train.csv")
+    ap.add_argument("--test-size", type=int, default=100_000, help="Number of rows for test.csv")
+    ap.add_argument("--noise-ratio", type=float, default=DEFAULT_NOISE_RATIO, help="Fraction of rows to perturb with noise [0-1]")
+    ap.add_argument("--seed", type=int, default=RANDOM_SEED, help="Random seed")
+    args = ap.parse_args()
+
+    random.seed(args.seed)
     labels = [label for label in _parse_taxonomy(TAXONOMY_PATH) if label.id]
-    rows = _generate_rows(labels)
-    write_dataset(rows)
+    total = args.train_size + args.test_size
+    rows = _generate_rows(labels, total_rows=total, noise_ratio=args.noise_ratio)
+    write_dataset(rows, train_size=args.train_size, test_size=args.test_size)
 
 
 if __name__ == "__main__":
