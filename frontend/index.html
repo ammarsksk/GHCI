@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>txcat – Transaction Categorisation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-title">txcat</div>
+        <div class="topbar-subtitle">Smart transaction categorisation console</div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card card-horizontal">
+        <div class="card-main">
+          <h2>Single transaction</h2>
+          <p class="card-subtitle">
+            Paste a single transaction narrative to see its category, confidence, and routing.
+          </p>
+          <textarea
+            id="single-text"
+            rows="3"
+            placeholder="AMEX 1MG AHMEDABAD REF CARD908715"
+          ></textarea>
+          <div class="actions">
+            <button id="single-predict">Predict</button>
+            <button id="single-clear" class="secondary">Clear</button>
+          </div>
+          <div id="single-result" class="result"></div>
+        </div>
+        <aside class="card-aside">
+          <h3>How it works</h3>
+          <ul>
+            <li>Text is normalised and featurised (word + char TF‑IDF).</li>
+            <li>A coarse router sends it to the right bucket.</li>
+            <li>A fine ensemble scores labels and applies thresholds.</li>
+            <li>Low‑confidence results are flagged for review.</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="card">
+        <h2>Batch scoring (CSV)</h2>
+        <p class="card-subtitle">
+          Upload a CSV with a text column containing transaction narratives. The model runs in the
+          background; you can monitor progress, inspect logs, and download the scored file when
+          it is ready.
+        </p>
+        <div class="batch-grid">
+          <div>
+            <div class="form-row">
+              <label for="csv-file">CSV file</label>
+              <input type="file" id="csv-file" accept=".csv" />
+            </div>
+            <div class="form-row">
+              <label for="csv-text-column">Text column</label>
+              <select id="csv-text-column">
+                <option value="">Choose a column…</option>
+              </select>
+              <small class="hint">Select the column that contains transaction narratives.</small>
+            </div>
+            <div class="form-row">
+              <label for="low-conf">Review threshold (LOW_CONF_ROUTE)</label>
+              <input type="text" id="low-conf" value="0.60" />
+              <small class="hint">
+                Predictions below this probability are marked as “Needs review”.
+              </small>
+            </div>
+            <div class="actions">
+              <button id="csv-start">Start batch job</button>
+              <button id="csv-cancel" class="secondary" disabled>Abort job</button>
+            </div>
+          </div>
+          <div class="batch-status-panel">
+            <div id="csv-status" class="status"></div>
+            <div id="csv-progress-bar" class="progress-bar">
+              <div class="progress-bar-fill" style="width: 0%"></div>
+            </div>
+            <div class="status-meta" id="csv-status-meta"></div>
+            <details id="csv-log-panel" class="log-panel">
+              <summary>Execution details</summary>
+              <pre id="csv-log"></pre>
+            </details>
+            <div id="csv-download" class="download-area"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Prediction log (this session)</h2>
+        <p class="card-subtitle">
+          A live view of all predictions made from this browser session. Use it as a quick audit
+          log while exploring the model.
+        </p>
+        <div id="history-table-wrapper" class="table-wrapper">
+          <table id="history-table">
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Text</th>
+                <th>Label</th>
+                <th>Conf.</th>
+                <th>Coarse</th>
+                <th>Coarse conf.</th>
+                <th>Review?</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="main.js"></script>
+  </body>
+  </html>

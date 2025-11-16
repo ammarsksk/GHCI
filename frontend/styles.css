@@ -1,0 +1,310 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top left, #0b1120 0, #020617 45%, #000000 100%);
+  color: #e5e7eb;
+}
+
+.topbar {
+  background: linear-gradient(90deg, #020617, #0f172a, #111827);
+  color: #e5e7eb;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.topbar-title {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.topbar-subtitle {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 1.5rem auto 2.5rem;
+  padding: 0 1rem;
+}
+
+.card {
+  background: radial-gradient(circle at top left, #0b1120 0, #020617 60%, #020617 100%);
+  border-radius: 0.9rem;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.7);
+  padding: 1.35rem 1.6rem 1.4rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.card h2 {
+  margin: 0 0 0.3rem;
+}
+
+.card-subtitle {
+  margin: 0 0 0.9rem;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.card-horizontal {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.4fr);
+  gap: 1.25rem;
+}
+
+.card-aside {
+  border-left: 1px solid rgba(75, 85, 99, 0.8);
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.card-aside h3 {
+  margin-top: 0;
+  font-size: 0.95rem;
+}
+
+.card-aside ul {
+  padding-left: 1.1rem;
+  margin: 0.4rem 0 0;
+}
+
+.card-aside li {
+  margin-bottom: 0.25rem;
+}
+
+.form-row {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+input[type="text"],
+input[type="file"],
+textarea,
+select {
+  font: inherit;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.45rem;
+  border: 1px solid #374151;
+  box-sizing: border-box;
+  background: #020617;
+  color: #e5e7eb;
+}
+
+input::file-selector-button {
+  font: inherit;
+  padding: 0.3rem 0.7rem;
+  margin-right: 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid #1f2937;
+  background: #111827;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.actions {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  font: inherit;
+  padding: 0.45rem 0.95rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #f9fafb;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: transform 0.08s ease-out, box-shadow 0.1s ease-out,
+    background 0.1s ease-out, opacity 0.1s ease-out;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+}
+
+button:hover:not([disabled]) {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 35px rgba(59, 130, 246, 0.55);
+}
+
+button.secondary {
+  background: #020617;
+  color: #e5e7eb;
+  border-color: #4b5563;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.6);
+}
+
+button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.result {
+  margin-top: 0.85rem;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.45rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(55, 65, 81, 0.85);
+}
+
+.status {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.status.info {
+  color: #bfdbfe;
+}
+.status.error {
+  color: #fecaca;
+}
+.status.success {
+  color: #bbf7d0;
+}
+
+.status-meta {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.progress-bar {
+  margin-top: 0.55rem;
+  width: 100%;
+  height: 0.4rem;
+  background: #020617;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #1f2937;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80, #22d3ee);
+  width: 0%;
+  transition: width 0.15s ease-out;
+}
+
+.log-panel {
+  margin-top: 0.75rem;
+}
+
+.log-panel summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #a5b4fc;
+}
+
+.log-panel pre {
+  background: #020617;
+  color: #e5e7eb;
+  padding: 0.55rem;
+  border-radius: 0.45rem;
+  max-height: 220px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  border: 1px solid #1f2937;
+}
+
+.download-area {
+  margin-top: 0.75rem;
+}
+
+.download-area a {
+  color: #a5b4fc;
+  text-decoration: none;
+}
+
+.download-area a:hover {
+  text-decoration: underline;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+th,
+td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid #1f2937;
+}
+
+th {
+  text-align: left;
+  background: #020617;
+}
+
+td:nth-child(2) {
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.batch-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+  gap: 1.2rem;
+}
+
+.batch-status-panel {
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 0.7rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #1f2937;
+}
+
+@media (max-width: 880px) {
+  .card-horizontal {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card-aside {
+    border-left: none;
+    border-top: 1px solid rgba(75, 85, 99, 0.8);
+    padding-left: 0;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  .batch-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
