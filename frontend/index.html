@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>txcat – Transaction Categorisation</title>
+    <title>txcat - Transaction categorisation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -15,8 +15,32 @@
     </header>
 
     <main class="container">
+      <section class="card hero-card">
+        <div class="hero-main">
+          <h1>On-prem, explainable transaction categorisation</h1>
+          <p class="hero-subtitle">
+            No third-party APIs. Business-grade accuracy with human-in-the-loop review.
+          </p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <div class="metric-label">Macro F1 (demo)</div>
+            <div class="metric-value">0.93</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Throughput (CPU)</div>
+            <div class="metric-value">approx. 5K tx/s</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Latency per tx</div>
+            <div class="metric-value">approx. 20 ms</div>
+          </div>
+        </div>
+      </section>
+
       <section class="card card-horizontal">
         <div class="card-main">
+          <div class="section-label">Playground</div>
           <h2>Single transaction</h2>
           <p class="card-subtitle">
             Paste a single transaction narrative to see its category, confidence, and routing.
@@ -27,31 +51,31 @@
             placeholder="AMEX 1MG AHMEDABAD REF CARD908715"
           ></textarea>
           <div class="actions">
-            <button id="single-predict">Predict</button>
+            <button id="single-predict">Score transaction</button>
             <button id="single-clear" class="secondary">Clear</button>
+            <button id="single-noise" class="secondary subtle">Add noise test</button>
           </div>
           <div id="single-result" class="result"></div>
         </div>
         <aside class="card-aside">
           <h3>How it works</h3>
           <ul>
-            <li>Text is normalised and featurised (word + char TF‑IDF).</li>
+            <li>Text is normalised and featurised (word + char TF-IDF).</li>
             <li>A coarse router sends it to the right bucket.</li>
             <li>A fine ensemble scores labels and applies thresholds.</li>
-            <li>Low‑confidence results are flagged for review.</li>
+            <li>Low-confidence results are flagged for review.</li>
           </ul>
         </aside>
       </section>
 
       <section class="card">
+        <div class="section-label">Batch scoring jobs</div>
         <h2>Batch scoring (CSV)</h2>
         <p class="card-subtitle">
-          Upload a CSV with a text column containing transaction narratives. The model runs in the
-          background; you can monitor progress, inspect logs, and download the scored file when
-          it is ready.
+          Upload a CSV with transaction narratives and run batch categorisation.
         </p>
         <div class="batch-grid">
-          <div>
+          <div class="batch-config-card">
             <div class="form-row">
               <label for="csv-file">CSV file</label>
               <input type="file" id="csv-file" accept=".csv" />
@@ -59,15 +83,25 @@
             <div class="form-row">
               <label for="csv-text-column">Text column</label>
               <select id="csv-text-column">
-                <option value="">Choose a column…</option>
+                <option value="">Choose a column...</option>
               </select>
               <small class="hint">Select the column that contains transaction narratives.</small>
             </div>
-            <div class="form-row">
-              <label for="low-conf">Review threshold (LOW_CONF_ROUTE)</label>
-              <input type="text" id="low-conf" value="0.60" />
+            <div class="form-row form-row-inline">
+              <label for="low-conf">Review threshold</label>
+              <div class="threshold-inputs">
+                <input type="text" id="low-conf" value="0.60" />
+                <input
+                  type="range"
+                  id="low-conf-slider"
+                  min="0.10"
+                  max="0.90"
+                  step="0.01"
+                  value="0.60"
+                />
+              </div>
               <small class="hint">
-                Predictions below this probability are marked as “Needs review”.
+                Predictions below this probability are marked as "Needs review".
               </small>
             </div>
             <div class="actions">
@@ -76,21 +110,56 @@
             </div>
           </div>
           <div class="batch-status-panel">
-            <div id="csv-status" class="status"></div>
-            <div id="csv-progress-bar" class="progress-bar">
-              <div class="progress-bar-fill" style="width: 0%"></div>
+            <div class="batch-status-header">
+              <h3>Job status</h3>
+              <span id="csv-status-pill" class="status-pill status-idle">Idle</span>
             </div>
-            <div class="status-meta" id="csv-status-meta"></div>
-            <details id="csv-log-panel" class="log-panel">
-              <summary>Execution details</summary>
-              <pre id="csv-log"></pre>
-            </details>
+            <div id="csv-status" class="status"></div>
+            <div id="csv-file-name" class="status-file">File: &mdash;</div>
+            <div class="progress-wrapper">
+              <div id="csv-progress-text" class="progress-text">Progress: 0%</div>
+              <div id="csv-progress-bar" class="progress-bar">
+                <div class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <div class="metric-label-small">Rows processed</div>
+                <div id="metric-rows" class="metric-value-small">0</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label-small">Duration</div>
+                <div id="metric-duration" class="metric-value-small">0.0 s</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label-small">Throughput</div>
+                <div id="metric-throughput" class="metric-value-small">0 rows/s</div>
+              </div>
+              <div class="metric-item">
+                <div class="metric-label-small">Flagged for review</div>
+                <div id="metric-flagged" class="metric-value-small">0%</div>
+              </div>
+            </div>
+            <div class="status-meta" id="csv-status-meta">
+              Metrics are measured per CSV run on this machine, including file I/O and model
+              scoring.
+            </div>
+            <div class="log-panel">
+              <button type="button" id="csv-log-toggle" class="log-header">
+                <span class="log-header-icon">&gt;</span>
+                <span class="log-header-label">Execution details</span>
+              </button>
+              <div id="csv-log-body" class="log-body">
+                <pre id="csv-log">Waiting for job...</pre>
+              </div>
+            </div>
             <div id="csv-download" class="download-area"></div>
           </div>
         </div>
       </section>
 
       <section class="card">
+        <div class="section-label">Session audit log</div>
         <h2>Prediction log (this session)</h2>
         <p class="card-subtitle">
           A live view of all predictions made from this browser session. Use it as a quick audit
@@ -107,6 +176,7 @@
                 <th>Coarse</th>
                 <th>Coarse conf.</th>
                 <th>Review?</th>
+                <th>Feedback</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -117,4 +187,5 @@
 
     <script src="main.js"></script>
   </body>
-  </html>
+</html>
+

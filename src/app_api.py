@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 
 from .celery_app import celery_app
 from .model_runtime import DEFAULT_LOW_CONF, predict_batch
-from .tasks import RESULT_DIR, UPLOAD_DIR, score_csv
+from .tasks import RESULT_DIR, UPLOAD_DIR, CANCEL_DIR, score_csv
 
 
 DATA_DIR = Path("data")
@@ -169,9 +169,16 @@ def get_job_status(job_id: str) -> JobStatusResponse:
     Get progress and status information for a CSV scoring job.
     """
     res = AsyncResult(job_id, app=celery_app)
-    if res.state == "PENDING" and res.info is None:
-        raise HTTPException(status_code=404, detail="Job not found.")
-    return _build_status(job_id, res)
+    status = _build_status(job_id, res)
+
+    # If a cancel marker is present and the task has not completed
+    # successfully, surface the job as cancelled regardless of the
+    # underlying Celery state so the UI does not appear to "resume".
+    cancel_marker = CANCEL_DIR / f"{job_id}.cancel"
+    if cancel_marker.exists() and status.state not in (states.SUCCESS, "SUCCESS"):
+        status.state = "CANCELLED"
+        status.stage = "cancelled"
+    return status
 
 
 @app.post("/jobs/{job_id}/cancel")
@@ -179,8 +186,12 @@ def cancel_job(job_id: str) -> Dict[str, str]:
     """
     Request cancellation of a running job.
     """
-    # Best-effort cancel (Celery will terminate the worker process if possible)
-    celery_app.control.revoke(job_id, terminate=True)
+    # Mark this job as cancelled so the worker can cooperatively stop
+    # after the current chunk, and also send a best-effort revoke signal.
+    CANCEL_DIR.mkdir(parents=True, exist_ok=True)
+    cancel_marker = CANCEL_DIR / f"{job_id}.cancel"
+    cancel_marker.touch(exist_ok=True)
+    celery_app.control.revoke(job_id, terminate=False)
     return {"job_id": job_id, "status": "cancel_requested"}
 
 

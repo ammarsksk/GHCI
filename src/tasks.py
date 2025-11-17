@@ -13,9 +13,11 @@ from .model_runtime import DEFAULT_LOW_CONF, predict_batch
 DATA_DIR = Path("data")
 UPLOAD_DIR = DATA_DIR / "uploads"
 RESULT_DIR = DATA_DIR / "results"
+CANCEL_DIR = DATA_DIR / "cancelled"
 
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 RESULT_DIR.mkdir(parents=True, exist_ok=True)
+CANCEL_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @celery_app.task(bind=True, name="txcat.score_csv")
@@ -46,9 +48,12 @@ def score_csv(
 
     processed = 0
     logs = []
+    cancelled = False
+    last_progress = 0
 
     try:
         first_chunk = True
+        cancel_marker = CANCEL_DIR / f"{self.request.id}.cancel"
         for chunk_idx, df_chunk in enumerate(
             pd.read_csv(in_path, chunksize=chunk_size, encoding="utf-8")
         ):
@@ -83,6 +88,7 @@ def score_csv(
                 f"Processed chunk {chunk_idx + 1}, rows={len(df_chunk)}, total_processed={processed}"
             )
             progress = int(100 * processed / max(total_rows, 1)) if total_rows else 100
+            last_progress = progress
 
             self.update_state(
                 state=states.STARTED,
@@ -95,6 +101,13 @@ def score_csv(
                     "output_path": str(out_path),
                 },
             )
+
+            # Cooperative cancellation: stop after current chunk if a cancel
+            # marker was created by /jobs/{job_id}/cancel.
+            if cancel_marker.exists():
+                cancelled = True
+                logs.append("Cancellation requested; stopping job after current chunk.")
+                break
     except Exception as exc:  # pragma: no cover - defensive
         # Surface a helpful message in the logs, but let Celery handle
         # the failure bookkeeping so the backend metadata stays valid.
@@ -117,11 +130,13 @@ def score_csv(
         raise
 
     # Final state
+    final_stage = "cancelled" if cancelled else "completed"
+    final_progress = last_progress if cancelled else 100
     final = {
         "current": processed,
         "total": total_rows,
-        "progress": 100,
-        "stage": "completed",
+        "progress": final_progress,
+        "stage": final_stage,
         "logs": logs,
         "output_path": str(out_path),
     }
