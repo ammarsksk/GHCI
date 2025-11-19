@@ -1,0 +1,8 @@
+{
+  "macro_f1": 0.969,
+  "accuracy": 0.966,
+  "n_train": 100000,
+  "n_test": 100000,
+  "throughput_tx_per_s": 4913.086720190988,
+  "latency_ms_per_tx": 0.20353803157806397
+}

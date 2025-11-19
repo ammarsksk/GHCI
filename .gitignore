@@ -26,14 +26,7 @@ ENV/
 .vscode/
 .idea/
 
-# Project data and large artifacts
-data/
-reports/
-models/
-*.joblib
-
-# Allow placeholder docs inside ignored dirs (optional)
-!data/README.txt
-!reports/README.md
-!models/README.md
-!**/.gitkeep
+# Runtime job artifacts (not needed in git)
+data/uploads/
+data/cancelled/
+data/results/
