@@ -22,6 +22,8 @@ class Label:
     description: str
     keywords: List[str]
     example_merchants: List[str]
+    group: str = "EXPENSE"
+    budget_bucket: str = "DISCRETIONARY"
 
 
 def _parse_taxonomy(path: Path) -> List[Label]:
@@ -36,11 +38,13 @@ def _parse_taxonomy(path: Path) -> List[Label]:
             return
         labels.append(
             Label(
-                id=current.get("id", "").strip(),
-                display_name=current.get("display_name", "").strip(),
-                description=current.get("description", "").strip(),
+                id=str(current.get("id", "")).strip(),
+                display_name=str(current.get("display_name", "")).strip(),
+                description=str(current.get("description", "")).strip(),
                 keywords=current.get("keywords", []),
                 example_merchants=current.get("example_merchants", []),
+                group=str(current.get("group", "EXPENSE")).strip() or "EXPENSE",
+                budget_bucket=str(current.get("budget_bucket", "")).strip() or "UNKNOWN",
             )
         )
         current = None
@@ -109,6 +113,7 @@ BANK_CODES = ["HDFC", "ICICI", "SBI", "AXIS", "KOTAK", "YES"]
 CARD_NETWORKS = ["VISA", "MASTERCARD", "RUPAY", "AMEX"]
 ACCOUNT_TYPES = ["SAVINGS", "CURRENT", "CREDIT_CARD"]
 CHANNEL_MAP = {
+    # Core spending categories
     "DINING": ["CARD", "UPI", "POS"],
     "GROCERIES": ["UPI", "CARD", "POS"],
     "FUEL": ["POS", "CARD"],
@@ -122,57 +127,161 @@ CHANNEL_MAP = {
     "HEALTH": ["CARD", "UPI", "NETBANKING"],
     "ENTERTAINMENT": ["UPI", "CARD", "SUBSCRIPTION"],
     "EDUCATION": ["NETBANKING", "UPI", "AUTOPAY"],
-    "FINANCIAL_SERVICES": ["NETBANKING", "NEFT", "CARD"],
-    "FEES": ["CARD", "NETBANKING"],
     "HOME_IMPROVEMENT": ["CARD", "NETBANKING"],
+    "PERSONAL_CARE_BEAUTY": ["CARD", "UPI", "WALLET"],
+    "PETS": ["CARD", "UPI", "NETBANKING"],
+    "GIFTS_OCCASIONS": ["CARD", "UPI", "WALLET"],
+    "HOBBIES_SPORTS": ["CARD", "UPI"],
+    "ALCOHOL_BARS": ["CARD", "UPI"],
+    "KIDS_BABY": ["CARD", "UPI", "WALLET"],
+    # Financial / utilities / fees
+    "FEES": ["CARD", "NETBANKING"],
     "SUBSCRIPTIONS": ["SUBSCRIPTION", "CARD", "UPI"],
     "CHARITY": ["NETBANKING", "UPI"],
-    "INCOME": ["NEFT", "IMPS", "SALARY"],
+    # Housing & loans
+    "HOUSING_RENT": ["NEFT", "NETBANKING", "UPI"],
+    "HOUSING_MAINTENANCE": ["NEFT", "NETBANKING"],
+    "HOME_SERVICES": ["UPI", "CARD", "NETBANKING"],
+    "DEBT_LOAN_HOME": ["AUTOPAY", "NACH", "NETBANKING"],
+    "DEBT_LOAN_PERSONAL": ["AUTOPAY", "NACH", "NETBANKING"],
+    "DEBT_LOAN_VEHICLE": ["AUTOPAY", "NACH", "NETBANKING"],
+    "DEBT_LOAN_EDUCATION": ["AUTOPAY", "NACH", "NETBANKING"],
+    "DEBT_LOAN_BNPL": ["UPI", "NETBANKING", "AUTOPAY"],
+    "DEBT_CREDIT_CARD_BILL": ["NETBANKING", "UPI", "AUTOPAY"],
+    "DEBT_COLLECTION_AGENCY": ["NETBANKING", "UPI"],
+    # Investments & insurance
+    "INVEST_MF_SIP": ["AUTOPAY", "NETBANKING", "UPI"],
+    "INVEST_STOCK_BROKERAGE": ["NETBANKING"],
+    "INVEST_GOLD_SILVER": ["CARD", "UPI", "NETBANKING"],
+    "INVEST_RETIREMENT": ["NETBANKING", "AUTOPAY"],
+    "INSURANCE_PREMIUM_LIFE": ["NETBANKING", "AUTOPAY", "CARD"],
+    "INSURANCE_PREMIUM_HEALTH": ["NETBANKING", "AUTOPAY", "CARD"],
+    "INSURANCE_PREMIUM_MOTOR": ["NETBANKING", "AUTOPAY", "CARD"],
+    # Government / taxes
+    "GOVT_TAXES_DIRECT": ["NETBANKING"],
+    "GOVT_TAXES_INDIRECT": ["NETBANKING"],
+    "GOVT_FEES_PENALTIES": ["NETBANKING", "CARD", "UPI"],
+    # Transfers & income
+    "TRANSFER_P2P_FAMILY_FRIENDS": ["UPI", "IMPS", "NEFT"],
+    "TRANSFER_SELF_INTERNAL": ["UPI", "NEFT", "NETBANKING"],
+    "TRANSFER_CASH_WITHDRAWAL": ["ATM"],
+    "TRANSFER_FOREX": ["NETBANKING", "NEFT", "RTGS"],
+    "INCOME_SALARY": ["NEFT", "SALARY"],
+    "INCOME_BUSINESS_SELF_EMPLOYED": ["NEFT", "RTGS", "IMPS"],
+    "INCOME_INVESTMENT": ["NEFT", "NETBANKING"],
+    "INCOME_REFUNDS": ["CARD", "UPI", "NETBANKING"],
+    "INCOME_GOVT_BENEFIT": ["NEFT"],
 }
 
 AMOUNT_RULES = {
+    # Food & daily spend
     "DINING": (120, 2500),
     "GROCERIES": (150, 4500),
     "FUEL": (400, 5500),
+    "MOBILITY": (150, 1800),
+    # Utilities
     "UTILITIES_POWER": (600, 4000),
     "UTILITIES_TELECOM": (199, 2500),
     "UTILITIES_WATER_GAS": (300, 2200),
+    # Shopping & lifestyle
     "SHOPPING_ECOM": (250, 12000),
     "SHOPPING_ELECTRONICS": (1200, 65000),
+    "HOME_IMPROVEMENT": (500, 90000),
+    "PERSONAL_CARE_BEAUTY": (300, 6000),
+    "PETS": (300, 8000),
+    "GIFTS_OCCASIONS": (250, 9000),
+    "HOBBIES_SPORTS": (300, 12000),
+    "ALCOHOL_BARS": (400, 7000),
+    "KIDS_BABY": (300, 10000),
+    # Travel / health / education / entertainment
     "TRAVEL": (800, 55000),
-    "MOBILITY": (150, 1800),
     "HEALTH": (250, 48000),
     "ENTERTAINMENT": (120, 4500),
+    "DIGITAL_GOODS_GAMING": (50, 3000),
     "EDUCATION": (500, 75000),
-    "FINANCIAL_SERVICES": (350, 85000),
+    # Financial & debt / investments
     "FEES": (50, 2500),
-    "HOME_IMPROVEMENT": (500, 90000),
+    "HOUSING_RENT": (5000, 65000),
+    "HOUSING_MAINTENANCE": (1000, 8000),
+    "DEBT_LOAN_HOME": (8000, 85000),
+    "DEBT_LOAN_PERSONAL": (3000, 55000),
+    "DEBT_LOAN_VEHICLE": (3000, 45000),
+    "DEBT_LOAN_EDUCATION": (2000, 35000),
+    "DEBT_LOAN_BNPL": (500, 15000),
+    "DEBT_CREDIT_CARD_BILL": (3000, 150000),
+    "DEBT_COLLECTION_AGENCY": (1000, 60000),
+    "INVEST_MF_SIP": (1000, 50000),
+    "INVEST_STOCK_BROKERAGE": (1000, 150000),
+    "INVEST_GOLD_SILVER": (2000, 200000),
+    "INVEST_RETIREMENT": (1000, 100000),
+    "INSURANCE_PREMIUM_LIFE": (500, 50000),
+    "INSURANCE_PREMIUM_HEALTH": (1000, 80000),
+    "INSURANCE_PREMIUM_MOTOR": (800, 45000),
+    # Government & transfers
+    "GOVT_TAXES_DIRECT": (2000, 250000),
+    "GOVT_TAXES_INDIRECT": (1000, 100000),
+    "GOVT_FEES_PENALTIES": (200, 25000),
+    "TRANSFER_P2P_FAMILY_FRIENDS": (200, 75000),
+    "TRANSFER_SELF_INTERNAL": (200, 250000),
+    "TRANSFER_CASH_WITHDRAWAL": (500, 20000),
+    "TRANSFER_FOREX": (10000, 500000),
+    # Income (credit)
+    "INCOME_SALARY": (15000, 250000),
+    "INCOME_BUSINESS_SELF_EMPLOYED": (5000, 500000),
+    "INCOME_INVESTMENT": (500, 150000),
+    "INCOME_REFUNDS": (100, 50000),
+    "INCOME_GOVT_BENEFIT": (500, 150000),
+    # Legacy / fallback labels (if still present)
+    "FINANCIAL_SERVICES": (350, 85000),
     "SUBSCRIPTIONS": (99, 15000),
     "CHARITY": (250, 25000),
     "INCOME": (15000, 250000),
 }
 
-CREDIT_LABELS = {"INCOME"}
-
 # Realistic class frequency priors (normalized at runtime for labels present)
 LABEL_WEIGHTS: Dict[str, float] = {
+    # Everyday spend tends to dominate
     "GROCERIES": 0.14,
     "DINING": 0.13,
     "MOBILITY": 0.11,
     "UTILITIES_TELECOM": 0.10,
-    "SHOPPING_ECOM": 0.09,
+    "SHOPPING_ECOM": 0.06,
+    "SHOPPING_ELECTRONICS": 0.03,
     "FUEL": 0.07,
     "HEALTH": 0.06,
     "TRAVEL": 0.06,
-    "ENTERTAINMENT": 0.06,
+    "ENTERTAINMENT": 0.05,
     "UTILITIES_POWER": 0.04,
     "UTILITIES_WATER_GAS": 0.03,
-    "FINANCIAL_SERVICES": 0.03,
-    "FEES": 0.03,
     "HOME_IMPROVEMENT": 0.02,
     "SUBSCRIPTIONS": 0.02,
     "CHARITY": 0.01,
-    "INCOME": 0.02,
+    # New lifestyle buckets
+    "PERSONAL_CARE_BEAUTY": 0.02,
+    "PETS": 0.005,
+    "GIFTS_OCCASIONS": 0.01,
+    "HOBBIES_SPORTS": 0.008,
+    "ALCOHOL_BARS": 0.01,
+    "KIDS_BABY": 0.01,
+    # Housing / debt / investments
+    "HOUSING_RENT": 0.03,
+    "DEBT_CREDIT_CARD_BILL": 0.025,
+    "DEBT_LOAN_HOME": 0.02,
+    "DEBT_LOAN_PERSONAL": 0.015,
+    "INVEST_MF_SIP": 0.02,
+    "INVEST_STOCK_BROKERAGE": 0.015,
+    "INVEST_GOLD_SILVER": 0.015,
+    "INVEST_RETIREMENT": 0.01,
+    "INSURANCE_PREMIUM_LIFE": 0.01,
+    "INSURANCE_PREMIUM_HEALTH": 0.008,
+    # Transfers & income
+    "TRANSFER_P2P_FAMILY_FRIENDS": 0.03,
+    "TRANSFER_SELF_INTERNAL": 0.04,
+    "TRANSFER_CASH_WITHDRAWAL": 0.015,
+    "INCOME_SALARY": 0.02,
+    "INCOME_BUSINESS_SELF_EMPLOYED": 0.01,
+    "INCOME_INVESTMENT": 0.01,
+    "INCOME_REFUNDS": 0.02,
 }
 
 # Account type distribution
@@ -324,10 +433,16 @@ def _apply_row_noise(row: Dict[str, object], label_ids: List[str], noise_ratio: 
         except Exception:
             pass
 
-    # Refund-like credit in non-income categories
-    if row.get("dr_cr") == "DR" and random.random() < 0.05:
+    # Refund-like credit: flip some debits into labelled refunds
+    if (
+        row.get("dr_cr") == "DR"
+        and "INCOME_REFUNDS" in label_ids
+        and random.random() < 0.05
+    ):
         row["dr_cr"] = "CR"
         row["narrative"] = f"REFUND {row['narrative']}"
+        row["category_id"] = "INCOME_REFUNDS"
+        row["category_display_name"] = "Income \u2013 Refunds & Chargebacks"
 
     # Missingness for some non-critical fields
     for key in ["merchant_name", "city", "reference", "keyword_hit"]:
@@ -395,7 +510,7 @@ def _generate_rows(labels: List[Label], total_rows: int, noise_ratio: float = DE
                 # Introduce occasional tiny or zero amounts
                 amount = round(random.choice([0.0, random.uniform(1.0, 25.0)]), 2)
 
-            credit_or_debit = "CR" if label.id in CREDIT_LABELS else "DR"
+            credit_or_debit = "CR" if label.group.upper() == "INCOME" else "DR"
             # refund-like flips handled in noise function
             value_date, posted_at = _random_dates()
             reference = _reference(channel)
@@ -448,8 +563,8 @@ def write_dataset(rows: List[Dict[str, object]], train_size: int, test_size: int
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Generate synthetic transaction datasets with realistic noise")
-    ap.add_argument("--train-size", type=int, default=100_000, help="Number of rows for train.csv")
-    ap.add_argument("--test-size", type=int, default=100_000, help="Number of rows for test.csv")
+    ap.add_argument("--train-size", type=int, default=300_000, help="Number of rows for train.csv")
+    ap.add_argument("--test-size", type=int, default=150_000, help="Number of rows for test.csv")
     ap.add_argument("--noise-ratio", type=float, default=DEFAULT_NOISE_RATIO, help="Fraction of rows to perturb with noise [0-1]")
     ap.add_argument("--seed", type=int, default=RANDOM_SEED, help="Random seed")
     args = ap.parse_args()

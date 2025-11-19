@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>Txcat – Evaluation report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-title">txcat</div>
+        <div class="topbar-subtitle">Model evaluation report (v7, synthetic data)</div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card hero-card">
+        <div class="hero-main">
+          <div class="section-label">Evaluation</div>
+          <h2>Summary metrics</h2>
+          <p class="card-subtitle">
+            Trained on 100,000 synthetic rows and evaluated on 100,000 hold-out rows.
+          </p>
+          <div class="hero-actions">
+            <a href="index.html" class="link-pill">&#8592; Back to playground</a>
+          </div>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <div class="metric-label">Accuracy (test set)</div>
+            <div class="metric-value">0.966</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Macro-F1 (test set)</div>
+            <div class="metric-value">0.969</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Throughput (hierarchy only)</div>
+            <div class="metric-value">8,518.5 tx/s</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Latency per tx</div>
+            <div class="metric-value">0.117 ms</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-label">Per-label scores</div>
+        <h2>Classification report</h2>
+        <p class="card-subtitle">
+          Precision, recall, F1-score and support per category on the test set.
+        </p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-score</th>
+                <th>Support</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ALCOHOL_BARS</td>
+                <td>0.990</td>
+                <td>0.992</td>
+                <td>0.991</td>
+                <td>596</td>
+              </tr>
+              <tr>
+                <td>CHARITY</td>
+                <td>0.993</td>
+                <td>0.989</td>
+                <td>0.991</td>
+                <td>562</td>
+              </tr>
+              <tr>
+                <td>DEBT_COLLECTION_AGENCY</td>
+                <td>0.993</td>
+                <td>0.998</td>
+                <td>0.995</td>
+                <td>1688</td>
+              </tr>
+              <tr>
+                <td>DEBT_CREDIT_CARD_BILL</td>
+                <td>0.996</td>
+                <td>0.996</td>
+                <td>0.996</td>
+                <td>1416</td>
+              </tr>
+              <tr>
+                <td>DEBT_LOAN_BNPL</td>
+                <td>0.995</td>
+                <td>0.996</td>
+                <td>0.996</td>
+                <td>1705</td>
+              </tr>
+              <tr>
+                <td>DEBT_LOAN_EDUCATION</td>
+                <td>0.991</td>
+                <td>0.995</td>
+                <td>0.993</td>
+                <td>1695</td>
+              </tr>
+              <tr>
+                <td>DEBT_LOAN_HOME</td>
+                <td>0.996</td>
+                <td>0.998</td>
+                <td>0.997</td>
+                <td>1099</td>
+              </tr>
+              <tr>
+                <td>DEBT_LOAN_PERSONAL</td>
+                <td>0.993</td>
+                <td>0.992</td>
+                <td>0.992</td>
+                <td>856</td>
+              </tr>
+              <tr>
+                <td>DEBT_LOAN_VEHICLE</td>
+                <td>0.994</td>
+                <td>0.998</td>
+                <td>0.996</td>
+                <td>1688</td>
+              </tr>
+              <tr>
+                <td>DIGITAL_GOODS_GAMING</td>
+                <td>0.994</td>
+                <td>0.997</td>
+                <td>0.995</td>
+                <td>1719</td>
+              </tr>
+              <tr>
+                <td>DINING</td>
+                <td>0.989</td>
+                <td>0.999</td>
+                <td>0.994</td>
+                <td>7388</td>
+              </tr>
+              <tr>
+                <td>EDUCATION</td>
+                <td>0.998</td>
+                <td>0.992</td>
+                <td>0.995</td>
+                <td>1722</td>
+              </tr>
+              <tr>
+                <td>ENTERTAINMENT</td>
+                <td>0.996</td>
+                <td>0.998</td>
+                <td>0.997</td>
+                <td>2753</td>
+              </tr>
+              <tr>
+                <td>FEES</td>
+                <td>0.901</td>
+                <td>0.991</td>
+                <td>0.944</td>
+                <td>1709</td>
+              </tr>
+              <tr>
+                <td>FUEL</td>
+                <td>0.992</td>
+                <td>0.998</td>
+                <td>0.995</td>
+                <td>3890</td>
+              </tr>
+              <tr>
+                <td>GIFTS_OCCASIONS</td>
+                <td>0.987</td>
+                <td>0.991</td>
+                <td>0.989</td>
+                <td>550</td>
+              </tr>
+              <tr>
+                <td>GOVT_FEES_PENALTIES</td>
+                <td>0.993</td>
+                <td>0.996</td>
+                <td>0.995</td>
+                <td>1658</td>
+              </tr>
+              <tr>
+                <td>GOVT_TAXES_DIRECT</td>
+                <td>0.992</td>
+                <td>0.996</td>
+                <td>0.994</td>
+                <td>1704</td>
+              </tr>
+              <tr>
+                <td>GOVT_TAXES_INDIRECT</td>
+                <td>0.994</td>
+                <td>0.994</td>
+                <td>0.994</td>
+                <td>1704</td>
+              </tr>
+              <tr>
+                <td>GROCERIES</td>
+                <td>0.990</td>
+                <td>0.980</td>
+                <td>0.985</td>
+                <td>7815</td>
+              </tr>
+              <tr>
+                <td>HEALTH</td>
+                <td>0.994</td>
+                <td>0.997</td>
+                <td>0.996</td>
+                <td>3449</td>
+              </tr>
+              <tr>
+                <td>HOBBIES_SPORTS</td>
+                <td>0.991</td>
+                <td>0.989</td>
+                <td>0.990</td>
+                <td>469</td>
+              </tr>
+              <tr>
+                <td>HOME_IMPROVEMENT</td>
+                <td>0.996</td>
+                <td>0.992</td>
+                <td>0.994</td>
+                <td>1117</td>
+              </tr>
+              <tr>
+                <td>HOME_SERVICES</td>
+                <td>0.995</td>
+                <td>0.995</td>
+                <td>0.995</td>
+                <td>1657</td>
+              </tr>
+              <tr>
+                <td>HOUSING_MAINTENANCE</td>
+                <td>0.993</td>
+                <td>0.997</td>
+                <td>0.995</td>
+                <td>1723</td>
+              </tr>
+              <tr>
+                <td>HOUSING_RENT</td>
+                <td>0.996</td>
+                <td>0.995</td>
+                <td>0.995</td>
+                <td>1687</td>
+              </tr>
+              <tr>
+                <td>INCOME_BUSINESS_SELF_EMPLOYED</td>
+                <td>0.995</td>
+                <td>0.996</td>
+                <td>0.996</td>
+                <td>568</td>
+              </tr>
+              <tr>
+                <td>INCOME_GOVT_BENEFIT</td>
+                <td>0.995</td>
+                <td>0.996</td>
+                <td>0.995</td>
+                <td>1684</td>
+              </tr>
+              <tr>
+                <td>INCOME_INVESTMENT</td>
+                <td>1.000</td>
+                <td>0.987</td>
+                <td>0.993</td>
+                <td>604</td>
+              </tr>
+              <tr>
+                <td>INCOME_REFUNDS</td>
+                <td>0.971</td>
+                <td>0.390</td>
+                <td>0.557</td>
+                <td>2047</td>
+              </tr>
+              <tr>
+                <td>INCOME_SALARY</td>
+                <td>0.996</td>
+                <td>0.994</td>
+                <td>0.995</td>
+                <td>1119</td>
+              </tr>
+              <tr>
+                <td>INSURANCE_PREMIUM_HEALTH</td>
+                <td>0.988</td>
+                <td>0.977</td>
+                <td>0.982</td>
+                <td>431</td>
+              </tr>
+              <tr>
+                <td>INSURANCE_PREMIUM_LIFE</td>
+                <td>0.995</td>
+                <td>0.989</td>
+                <td>0.992</td>
+                <td>563</td>
+              </tr>
+              <tr>
+                <td>INSURANCE_PREMIUM_MOTOR</td>
+                <td>0.995</td>
+                <td>0.998</td>
+                <td>0.997</td>
+                <td>1759</td>
+              </tr>
+              <tr>
+                <td>INVEST_GOLD_SILVER</td>
+                <td>0.989</td>
+                <td>0.993</td>
+                <td>0.991</td>
+                <td>829</td>
+              </tr>
+              <tr>
+                <td>INVEST_MF_SIP</td>
+                <td>0.993</td>
+                <td>0.996</td>
+                <td>0.995</td>
+                <td>1114</td>
+              </tr>
+              <tr>
+                <td>INVEST_RETIREMENT</td>
+                <td>0.993</td>
+                <td>0.980</td>
+                <td>0.987</td>
+                <td>563</td>
+              </tr>
+              <tr>
+                <td>INVEST_STOCK_BROKERAGE</td>
+                <td>0.986</td>
+                <td>0.990</td>
+                <td>0.988</td>
+                <td>811</td>
+              </tr>
+              <tr>
+                <td>KIDS_BABY</td>
+                <td>0.988</td>
+                <td>0.988</td>
+                <td>0.988</td>
+                <td>563</td>
+              </tr>
+              <tr>
+                <td>MOBILITY</td>
+                <td>0.990</td>
+                <td>0.998</td>
+                <td>0.994</td>
+                <td>6213</td>
+              </tr>
+              <tr>
+                <td>PERSONAL_CARE_BEAUTY</td>
+                <td>0.991</td>
+                <td>0.997</td>
+                <td>0.994</td>
+                <td>1109</td>
+              </tr>
+              <tr>
+                <td>PETS</td>
+                <td>0.989</td>
+                <td>0.969</td>
+                <td>0.979</td>
+                <td>290</td>
+              </tr>
+              <tr>
+                <td>SHOPPING_ECOM</td>
+                <td>0.588</td>
+                <td>0.997</td>
+                <td>0.740</td>
+                <td>3407</td>
+              </tr>
+              <tr>
+                <td>SHOPPING_ELECTRONICS</td>
+                <td>0.995</td>
+                <td>0.474</td>
+                <td>0.642</td>
+                <td>1650</td>
+              </tr>
+              <tr>
+                <td>SUBSCRIPTIONS</td>
+                <td>0.996</td>
+                <td>0.990</td>
+                <td>0.993</td>
+                <td>1149</td>
+              </tr>
+              <tr>
+                <td>TRANSFER_CASH_WITHDRAWAL</td>
+                <td>0.994</td>
+                <td>0.993</td>
+                <td>0.994</td>
+                <td>854</td>
+              </tr>
+              <tr>
+                <td>TRANSFER_FOREX</td>
+                <td>0.995</td>
+                <td>0.996</td>
+                <td>0.996</td>
+                <td>1705</td>
+              </tr>
+              <tr>
+                <td>TRANSFER_P2P_FAMILY_FRIENDS</td>
+                <td>0.996</td>
+                <td>0.995</td>
+                <td>0.996</td>
+                <td>1697</td>
+              </tr>
+              <tr>
+                <td>TRANSFER_SELF_INTERNAL</td>
+                <td>0.996</td>
+                <td>0.675</td>
+                <td>0.804</td>
+                <td>2316</td>
+              </tr>
+              <tr>
+                <td>TRAVEL</td>
+                <td>0.996</td>
+                <td>0.997</td>
+                <td>0.997</td>
+                <td>3346</td>
+              </tr>
+              <tr>
+                <td>UTILITIES_POWER</td>
+                <td>0.994</td>
+                <td>0.996</td>
+                <td>0.995</td>
+                <td>2246</td>
+              </tr>
+              <tr>
+                <td>UTILITIES_TELECOM</td>
+                <td>0.969</td>
+                <td>0.999</td>
+                <td>0.983</td>
+                <td>5608</td>
+              </tr>
+              <tr>
+                <td>UTILITIES_WATER_GAS</td>
+                <td>0.997</td>
+                <td>0.995</td>
+                <td>0.996</td>
+                <td>1736</td>
+              </tr>
+              <tr class="metrics-summary">
+                <td>accuracy</td>
+                <td></td>
+                <td></td>
+                <td>0.966</td>
+                <td>100000</td>
+              </tr>
+              <tr class="metrics-summary">
+                <td>macro avg</td>
+                <td>0.983</td>
+                <td>0.966</td>
+                <td>0.969</td>
+                <td>100000</td>
+              </tr>
+              <tr class="metrics-summary">
+                <td>weighted avg</td>
+                <td>0.976</td>
+                <td>0.966</td>
+                <td>0.964</td>
+                <td>100000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </body>
+</html>

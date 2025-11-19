@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>txcat - Transaction categorisation</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <title>Txcat</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -21,19 +22,26 @@
           <p class="hero-subtitle">
             No third-party APIs. Business-grade accuracy with human-in-the-loop review.
           </p>
+          <div class="hero-actions">
+            <a href="metrics.html" class="link-pill">View v7 evaluation report</a>
+          </div>
         </div>
         <div class="hero-metrics">
           <div class="metric">
-            <div class="metric-label">Macro F1 (demo)</div>
-            <div class="metric-value">0.93</div>
+            <div class="metric-label">Accuracy (test set)</div>
+            <div class="metric-value">0.966</div>
           </div>
           <div class="metric">
-            <div class="metric-label">Throughput (CPU)</div>
-            <div class="metric-value">approx. 5K tx/s</div>
+            <div class="metric-label">Macro-F1 (test set)</div>
+            <div class="metric-value">0.969</div>
           </div>
           <div class="metric">
             <div class="metric-label">Latency per tx</div>
-            <div class="metric-value">approx. 20 ms</div>
+            <div class="metric-value">0.117 ms</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Throughput (hierarchy only)</div>
+            <div class="metric-value">8,518 tx/s</div>
           </div>
         </div>
       </section>
@@ -188,4 +196,3 @@
     <script src="main.js"></script>
   </body>
 </html>
-

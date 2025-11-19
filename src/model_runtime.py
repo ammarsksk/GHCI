@@ -13,7 +13,7 @@ from .lexicon_patch import coarse_boost, fine_hard_override
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = ROOT / "models" / "txcat_fastcpu_v6.joblib"
+MODEL_PATH = ROOT / "models" / "txcat_fastcpu_v7.joblib"
 
 DEFAULT_LOW_CONF = 0.60
 
@@ -85,7 +85,7 @@ def _get_feature_names(vec) -> List[str]:
 @lru_cache(maxsize=1)
 def load_model() -> Dict[str, object]:
     """
-    Load the txcat v6 model artifact once per process.
+    Load the txcat v7 model artifact once per process.
     """
     _patch_sgd_log()
     _ensure_featurizer_module()
@@ -116,7 +116,8 @@ def _reconstruct_fine_solo(
 def predict_batch(texts: List[str], low_conf: float = DEFAULT_LOW_CONF) -> List[Dict[str, object]]:
     """
     Run hierarchical prediction on a batch of raw texts using the
-    saved v6 faststack model. Mirrors the logic in train_eval_v6_faststack.py.
+    saved faststack model (currently v7). Mirrors the
+    training-time hierarchy logic used in the trainer.
     """
     if not texts:
         return []

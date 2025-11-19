@@ -1,23 +1,55 @@
-version: 2
+version: 3
 name: txcat-en-in
 locale: en_IN
 currency: INR
-last_updated: 2024-05-01
+last_updated: 2025-11-17
 maintainers:
   - name: Core Taxonomy Team
     contact: taxonomists@example.com
 notes: |
-  This taxonomy enumerates the most common consumer banking transaction
-  categories observed in Indian retail banking feeds. Each label lists the
-  search keywords that power the deterministic rules engine along with
-  contextual metadata that downstream review tools can surface to analysts.
+  Rich transaction taxonomy for Indian retail banking feeds.
+
+  Key fields:
+  - id_field:      Stable label identifier used by the model/runtime.
+  - display_name:  Human-facing label text.
+  - description:   Short explanation of the category.
+  - group:         EXPENSE | INCOME | TRANSFER | INTERNAL.
+  - primary:       true = top-level label surfaced in UI; false = fine-grained.
+  - parent_id:     Parent label id for sub-categories; null for primaries.
+  - budget_bucket: ESSENTIAL | DISCRETIONARY | DEBT | INVESTMENT | INTERNAL.
+  - default_direction: DEBIT | CREDIT (from account’s perspective).
+  - default_recurring: Whether this is usually recurring.
+  - channel_tags:  Typical payment channels (UPI, CARD, NETBANKING, AUTOPAY, etc.).
+  - instrument_tags: Underlying instruments (UPI, CARD, CASH, WALLET, etc.).
+  - mcc_hints:     Likely card MCCs.
+  - upi_merchant_bucket: Coarse bucket aligned with UPI/NPCI reporting.
+  - risk_tags:     ["GAMBLING"], ["CRYPTO"], ["HIGH_CHARGEBACK"], etc.
+  - tax_relevant:  Whether transactions in this label are usually tax-relevant.
+  - keywords:      Deterministic matching keywords & patterns.
+  - example_merchants: Brand names for heuristics / demos.
+  - example_descriptions: Realistic bank-statement-like narratives.
+
 labels:
+  # ---------------------------------------------------------------------------
+  # FOOD, GROCERIES, MOBILITY
+  # ---------------------------------------------------------------------------
   - id: DINING
     display_name: Dining & Food Delivery
     description: Cafes, restaurants, fast food, and meal delivery platforms.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE, DELIVERY]
+    instrument_tags: [UPI, CARD, NETBANKING, WALLET]
+    mcc_hints: [5812, 5814]
+    upi_merchant_bucket: DINING
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - cafe
-      - café
       - coffee
       - starbucks
       - domino
@@ -37,11 +69,29 @@ labels:
     example_merchants:
       - Starbucks India
       - Zomato
-      - McDonald's
       - Swiggy
+      - McDonald's
+      - KFC India
+    example_descriptions:
+      - "UPI/UPI90871234 ZOMATO@okaxis BENGALURU"
+      - "VISA MCDONALDS JAIPUR REF CARD193096"
+      - "POS BENGALURU KFC INDIA REF 473829"
+
   - id: GROCERIES
     display_name: Groceries & Daily Essentials
     description: Supermarkets, kirana stores, and recurring grocery delivery.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [IN_PERSON, ONLINE, DELIVERY]
+    instrument_tags: [UPI, CARD, NETBANKING, WALLET]
+    mcc_hints: [5411, 5499]
+    upi_merchant_bucket: GROCERIES
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - grocery
       - grocer
@@ -57,21 +107,36 @@ labels:
       - more retail
       - fresh to home
       - fresh2home
-      - lidl
-      - aldi
-      - spar
-      - 7-eleven
+      - jio mart
       - spencer's
-      - mart
       - bazaar
+      - mart
     example_merchants:
       - BigBasket
       - DMart Ready
       - Reliance Fresh
       - Nature's Basket
+      - JioMart
+    example_descriptions:
+      - "UPI/UPI98903486 1MG@oksbi MEDPLUS HYDERABAD"
+      - "VISA MORE RETAIL AHMEDABAD REF CARD475152"
+      - "UPI/UPI77123456 BIGBASKET@okicici MUMBAI"
+
   - id: FUEL
     display_name: Fuel & Gas Stations
     description: Petrol pumps, diesel stations, CNG filling stations, and surcharges.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON]
+    instrument_tags: [CARD, UPI]
+    mcc_hints: [5541, 5542]
+    upi_merchant_bucket: FUEL
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - fuel
       - petrol
@@ -79,7 +144,6 @@ labels:
       - petrol pump
       - gas station
       - shell
-      - esso
       - iocl
       - indian oil
       - bpcl
@@ -92,10 +156,69 @@ labels:
     example_merchants:
       - Indian Oil Corporation
       - Bharat Petroleum
+      - Hindustan Petroleum
       - Shell India
+    example_descriptions:
+      - "VISA HPCL FUEL PUMP KOLKATA REF CARD965225"
+      - "POS INDIAN OIL BENGALURU REF 738291"
+
+  - id: MOBILITY
+    display_name: Mobility – Ride Hailing & Transit
+    description: App cabs, metro cards, bike taxis, and driver tips.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE, IN_PERSON]
+    instrument_tags: [UPI, CARD, WALLET]
+    mcc_hints: [4121, 4784]
+    upi_merchant_bucket: MOBILITY
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - uber
+      - ola
+      - rapido
+      - indrive
+      - ride
+      - driver tip
+      - cab fare
+      - taxi
+      - metro card
+      - namma metro
+      - dmrc
+      - mumbai metro
+      - transit
+    example_merchants:
+      - Uber India
+      - Ola Cabs
+      - Rapido
+      - Delhi Metro Rail Corporation
+    example_descriptions:
+      - "AMEX OLA CABS KOLKATA REF CARD965225"
+      - "UPI/UPI54321987 UBERINDIA@icici DELHI"
+      - "VISA RAPIDO DELHI REF CARD880618"
+
+  # ---------------------------------------------------------------------------
+  # UTILITIES – POWER, TELECOM, WATER, GAS
+  # ---------------------------------------------------------------------------
   - id: UTILITIES_POWER
     display_name: Utilities – Electricity
     description: Electricity distribution companies and power bill payments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NETBANKING, AUTOPAY, ONLINE]
+    instrument_tags: [NETBANKING, CARD, UPI]
+    mcc_hints: [4900]
+    upi_merchant_bucket: UTILITIES
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - electricity
       - electric bill
@@ -111,23 +234,27 @@ labels:
       - pspcl
       - tpddl
       - wbsedcl
-      - ugvcl
-      - mgvcl
-      - dgvcl
-      - mseb
-      - mppkvvcl
-      - dvvnl
-      - apdcl
     example_merchants:
       - BSES Rajdhani Power
       - Tata Power Delhi Distribution
       - Adani Electricity Mumbai
+
   - id: UTILITIES_TELECOM
     display_name: Utilities – Telecom & Internet
     description: Mobile, broadband, fibre, and prepaid/postpaid recharge payments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [ONLINE, AUTOPAY]
+    instrument_tags: [UPI, NETBANKING, CARD, WALLET]
+    mcc_hints: [4812, 4814]
+    upi_merchant_bucket: TELECOM
+    risk_tags: []
+    tax_relevant: false
     keywords:
-      - telecom
-      - telekom
       - recharge
       - prepaid
       - postpaid
@@ -150,16 +277,28 @@ labels:
       - Jio Platforms
       - Vodafone Idea
       - ACT Fibernet
+
   - id: UTILITIES_WATER_GAS
     display_name: Utilities – Water & Piped Gas
     description: Municipal water boards and piped natural gas distributors.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NETBANKING, AUTOPAY]
+    instrument_tags: [NETBANKING, UPI, CARD]
+    mcc_hints: [4900]
+    upi_merchant_bucket: UTILITIES
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - water bill
       - water board
       - jal board
       - djb
       - bwssb
-      - mjp
       - png
       - gas bill
       - piped gas
@@ -167,19 +306,32 @@ labels:
       - indraprastha gas
       - mahanagar gas
       - gail gas
-      - aadhaar gas
-      - mnng
     example_merchants:
       - Delhi Jal Board
       - Indraprastha Gas Limited
       - Mahanagar Gas Limited
+
+  # ---------------------------------------------------------------------------
+  # SHOPPING & LIFESTYLE
+  # ---------------------------------------------------------------------------
   - id: SHOPPING_ECOM
     display_name: Shopping – E-commerce Marketplaces
     description: Online marketplaces, general online retail, and order fulfilment.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE]
+    instrument_tags: [CARD, NETBANKING, UPI, WALLET]
+    mcc_hints: [5311]
+    upi_merchant_bucket: SHOPPING
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - amazon
       - amzn
-      - azn
       - flipkart
       - fkrt
       - myntra
@@ -190,7 +342,6 @@ labels:
       - order id
       - shipment
       - delivered
-      - prime
       - marketplace
       - cart
       - checkout
@@ -199,11 +350,30 @@ labels:
       - Flipkart
       - Myntra
       - Nykaa
+
   - id: SHOPPING_ELECTRONICS
     display_name: Shopping – Electronics & Appliances
     description: Electronics retail chains, gadget stores, and manufacturer outlets.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [CARD, NETBANKING, EMI]
+    mcc_hints: [5732, 5735]
+    upi_merchant_bucket: ELECTRONICS
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - electronics
+      - mobile
+      - smartphone
+      - laptop
+      - tv
+      - computer
+      - console
       - gadget
       - appliance
       - croma
@@ -223,9 +393,237 @@ labels:
       - Reliance Digital
       - Apple Store
       - OnePlus Experience Store
+
+  - id: HOME_IMPROVEMENT
+    display_name: Home Improvement & Furnishings
+    description: Furniture, hardware, paints, and home décor merchants.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [CARD, NETBANKING]
+    mcc_hints: [5712, 5713]
+    upi_merchant_bucket: HOME
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - ikea
+      - hometown
+      - pepperfry
+      - urban ladder
+      - home centre
+      - home center
+      - decor
+      - furnishing
+      - hardware
+      - paints
+      - asian paints
+      - berger paints
+      - plywood
+      - tile
+      - sanitaryware
+    example_merchants:
+      - IKEA India
+      - Pepperfry
+      - Asian Paints
+      - Urban Ladder
+
+  - id: PERSONAL_CARE_BEAUTY
+    display_name: Personal Care & Beauty
+    description: Salons, spas, grooming, and cosmetics retail.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [CARD, UPI, WALLET]
+    mcc_hints: [7230, 7298]
+    upi_merchant_bucket: PERSONAL_CARE
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - salon
+      - spa
+      - grooming
+      - haircut
+      - lakme salon
+      - naturals
+      - vlcc
+      - body shop
+      - nykaa beauty
+      - makeup
+      - cosmetics
+    example_merchants:
+      - Lakme Salon
+      - Naturals
+      - VLCC
+      - Nykaa Beauty
+
+  - id: PETS
+    display_name: Pets – Food, Vets & Supplies
+    description: Pet food, veterinary clinics, grooming, and pet stores.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [CARD, UPI, NETBANKING]
+    mcc_hints: [0742, 5995]
+    upi_merchant_bucket: PETS
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - pet food
+      - pet store
+      - vet clinic
+      - veterinary
+      - heads up for tails
+      - petsutra
+      - dogspot
+      - pet grooming
+    example_merchants:
+      - Heads Up For Tails
+      - PetSutra
+      - DogSpot
+
+  - id: GIFTS_OCCASIONS
+    display_name: Gifts, Flowers & Occasions
+    description: Gifts, florists, party supplies and seasonal shopping.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE, DELIVERY]
+    instrument_tags: [CARD, UPI, WALLET]
+    mcc_hints: [5947, 5999]
+    upi_merchant_bucket: GIFTS
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - gift
+      - bouquet
+      - flowers
+      - ferns n petals
+      - fnp
+      - archies
+      - rakhi
+      - hamper
+      - diwali
+      - christmas
+      - party supplies
+    example_merchants:
+      - Ferns N Petals
+      - Archies
+      - Local florists
+
+  - id: HOBBIES_SPORTS
+    display_name: Hobbies, Sports & Music
+    description: Sports goods, music stores, hobby and art supplies.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [CARD, UPI]
+    mcc_hints: [5655, 5941, 5945]
+    upi_merchant_bucket: HOBBIES
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - decathlon
+      - sports shop
+      - music store
+      - guitar
+      - keyboard
+      - hobby shop
+      - art supplies
+    example_merchants:
+      - Decathlon
+      - Local sports shops
+      - Furtados Music
+
+  - id: ALCOHOL_BARS
+    display_name: Alcohol, Bars & Pubs
+    description: Wine shops, liquor stores, pubs and breweries.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON]
+    instrument_tags: [CARD, UPI]
+    mcc_hints: [5813]
+    upi_merchant_bucket: ALCOHOL
+    risk_tags: ["AGE_RESTRICTED"]
+    tax_relevant: false
+    keywords:
+      - wine shop
+      - liquor
+      - pub
+      - brewery
+      - bar
+    example_merchants:
+      - Social Offline
+      - Local wine shops
+
+  - id: KIDS_BABY
+    display_name: Kids & Baby
+    description: Baby products, toy stores, kids clothing and school uniforms.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [CARD, UPI, WALLET]
+    mcc_hints: [5641, 5945]
+    upi_merchant_bucket: KIDS
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - firstcry
+      - hopscotch
+      - toy store
+      - baby diaper
+      - babycare
+      - kids wear
+      - school uniform
+    example_merchants:
+      - FirstCry
+      - Hopscotch
+      - Local toy stores
+
+  # ---------------------------------------------------------------------------
+  # TRAVEL, HEALTH, EDUCATION, ENTERTAINMENT & DIGITAL GOODS
+  # ---------------------------------------------------------------------------
   - id: TRAVEL
     display_name: Travel – Flights & Rail
     description: Airlines, railways, OTA bookings, and associated ticketing fees.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE, IN_PERSON]
+    instrument_tags: [CARD, UPI, NETBANKING]
+    mcc_hints: [3000, 4112]
+    upi_merchant_bucket: TRAVEL
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - airline
       - flight
@@ -233,7 +631,6 @@ labels:
       - air india
       - vistara
       - spicejet
-      - goair
       - akasa
       - cleartrip
       - makemytrip
@@ -248,32 +645,22 @@ labels:
       - Air India
       - Indian Railways
       - MakeMyTrip
-  - id: MOBILITY
-    display_name: Mobility – Ride Hailing & Transit
-    description: App cabs, metro cards, bike taxis, and driver tips.
-    keywords:
-      - uber
-      - ola
-      - rapido
-      - indrive
-      - ride
-      - driver tip
-      - cab fare
-      - taxi
-      - metro card
-      - namma metro
-      - dmrc
-      - mumbai metro
-      - lrt
-      - transit
-    example_merchants:
-      - Uber India
-      - Ola Cabs
-      - Rapido
-      - Delhi Metro Rail Corporation
+
   - id: HEALTH
     display_name: Health & Wellness
     description: Hospitals, clinics, pharmacies, labs, and telemedicine services.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [CARD, UPI, NETBANKING]
+    mcc_hints: [5912, 8062, 8099]
+    upi_merchant_bucket: HEALTH
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - hospital
       - clinic
@@ -296,9 +683,22 @@ labels:
       - Fortis Healthcare
       - PharmEasy
       - 1mg
+
   - id: ENTERTAINMENT
     display_name: Entertainment & Media
     description: Streaming platforms, cinemas, gaming, and subscriptions for leisure.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE, IN_PERSON]
+    instrument_tags: [CARD, UPI, WALLET]
+    mcc_hints: [7832, 7841, 7922]
+    upi_merchant_bucket: ENTERTAINMENT
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - bookmyshow
       - cinema
@@ -316,15 +716,59 @@ labels:
       - apple music
       - steam
       - playstation
-      - season pass
     example_merchants:
       - BookMyShow
       - Netflix
       - Disney+ Hotstar
       - Sony LIV
+
+  - id: DIGITAL_GOODS_GAMING
+    display_name: Digital Goods – Gaming & In-App Purchases
+    description: Game top-ups, in-app purchases, and platform wallets for games.
+    group: EXPENSE
+    primary: false
+    parent_id: ENTERTAINMENT
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE]
+    instrument_tags: [CARD, WALLET]
+    mcc_hints: [5815, 7994]
+    upi_merchant_bucket: GAMING
+    risk_tags: ["HIGH_CHARGEBACK"]
+    tax_relevant: false
+    keywords:
+      - google play
+      - play store
+      - app store
+      - steam
+      - xbox
+      - psn
+      - riot games
+      - pubg
+      - bgmi
+      - free fire
+    example_merchants:
+      - Google Play
+      - Apple App Store
+      - Steam
+      - Xbox Live
+
   - id: EDUCATION
     display_name: Education & Learning
     description: Tuition payments, online courses, test prep, and school fees.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [ONLINE, NETBANKING]
+    instrument_tags: [NETBANKING, UPI, CARD]
+    mcc_hints: [8211, 8220, 8249]
+    upi_merchant_bucket: EDUCATION
+    risk_tags: []
+    tax_relevant: false
     keywords:
       - school fee
       - tuition
@@ -332,13 +776,11 @@ labels:
       - university
       - coaching
       - byjus
-      - byju's
       - unacademy
       - vedantu
       - coursera
       - udemy
       - skillshare
-      - khan academy
       - test series
       - exam fee
     example_merchants:
@@ -346,80 +788,687 @@ labels:
       - Unacademy
       - Coursera
       - Local Schools
-  - id: FINANCIAL_SERVICES
-    display_name: Financial Services & Charges
-    description: Insurance premiums, mutual funds, brokerage, convenience fees, and bank charges.
+
+  # ---------------------------------------------------------------------------
+  # HOUSING, LOANS, INVESTMENTS, INSURANCE
+  # ---------------------------------------------------------------------------
+  - id: HOUSING_RENT
+    display_name: Housing – Rent & PG
+    description: House rent, PG/hostel, co-living and office rent payments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NEFT, NETBANKING, UPI, AUTOPAY]
+    instrument_tags: [NETBANKING, UPI]
+    mcc_hints: [6513]
+    upi_merchant_bucket: HOUSING
+    risk_tags: []
+    tax_relevant: true
     keywords:
-      - insurance
-      - premium
-      - policybazaar
+      - rent
+      - house rent
+      - pg
+      - hostel fee
+      - coliving
+      - nobroker
+      - nestaway
+    example_merchants:
+      - NoBroker
+      - Nestaway
+      - Local landlords
+
+  - id: HOUSING_MAINTENANCE
+    display_name: Housing – Society Maintenance
+    description: Society maintenance, RWA dues, security and housekeeping charges.
+    group: EXPENSE
+    primary: false
+    parent_id: HOUSING_RENT
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NEFT, NETBANKING, AUTOPAY]
+    instrument_tags: [NETBANKING, UPI]
+    mcc_hints: [9399]
+    upi_merchant_bucket: HOUSING
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - maintenance
+      - society charges
+      - rwa
+      - cam charges
+      - association fee
+    example_merchants:
+      - Resident Welfare Associations
+      - Housing Societies
+
+  - id: HOME_SERVICES
+    display_name: Home Services & Repairs
+    description: Cleaning, pest control, plumbers, carpenters, electricians and appliance repair.
+    group: EXPENSE
+    primary: false
+    parent_id: HOME_IMPROVEMENT
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [IN_PERSON, ONLINE]
+    instrument_tags: [UPI, CARD, NETBANKING]
+    mcc_hints: [7342]
+    upi_merchant_bucket: HOME_SERVICES
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - urban company
+      - house cleaning
+      - pest control
+      - plumber
+      - electrician
+      - ac service
+      - repair
+    example_merchants:
+      - Urban Company
+      - Local service providers
+
+  - id: DEBT_LOAN_HOME
+    display_name: Loan – Home
+    description: Home loan EMIs and pre-payments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DEBT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [AUTOPAY, NACH, NETBANKING]
+    instrument_tags: [NETBANKING, NACH]
+    mcc_hints: [6012]
+    upi_merchant_bucket: LOAN
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - home loan
+      - housing loan
+      - loan emi
+      - nach
+      - ecs
+      - auto debit
+      - repayment
+    example_merchants:
+      - HDFC Ltd
+      - SBI Home Loans
+      - ICICI Home Finance
+
+  - id: DEBT_LOAN_PERSONAL
+    display_name: Loan – Personal
+    description: Personal loan EMIs and lump-sum repayments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DEBT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [AUTOPAY, NACH, NETBANKING]
+    instrument_tags: [NETBANKING, NACH]
+    mcc_hints: [6012]
+    upi_merchant_bucket: LOAN
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - personal loan
+      - loan emi
+      - nbfc
+      - bajaj finserv
+      - cashe
+      - kreditbee
+      - loan repayment
+    example_merchants:
+      - Bajaj Finserv
+      - CASHe
+      - KreditBee
+
+  - id: DEBT_LOAN_VEHICLE
+    display_name: Loan – Vehicle
+    description: Car and two-wheeler loan EMIs and repayments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DEBT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [AUTOPAY, NACH, NETBANKING]
+    instrument_tags: [NETBANKING, NACH]
+    mcc_hints: [6012]
+    upi_merchant_bucket: LOAN
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - vehicle loan
+      - car loan
+      - bike loan
+      - auto loan
+      - emi
+    example_merchants:
+      - HDFC Bank Auto Loans
+      - ICICI Bank Auto Loans
+
+  - id: DEBT_LOAN_EDUCATION
+    display_name: Loan – Education
+    description: Education loan EMIs and repayments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DEBT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [AUTOPAY, NACH, NETBANKING]
+    instrument_tags: [NETBANKING, NACH]
+    mcc_hints: [6012]
+    upi_merchant_bucket: LOAN
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - education loan
+      - student loan
+      - study loan
+      - loan emi
+    example_merchants:
+      - SBI Education Loans
+      - Axis Bank Education Loans
+
+  - id: DEBT_LOAN_BNPL
+    display_name: Loan – BNPL & Pay-later
+    description: Buy-now-pay-later and postpaid credit products.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DEBT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [AUTOPAY, UPI, NETBANKING]
+    instrument_tags: [UPI, NETBANKING]
+    mcc_hints: [6012]
+    upi_merchant_bucket: BNPL
+    risk_tags: ["HIGH_RISK"]
+    tax_relevant: false
+    keywords:
+      - pay later
+      - postpaid
+      - bnpl
+      - mobikwik zip
+      - paytm postpaid
+      - simpl
+      - lazypay
+    example_merchants:
+      - Paytm Postpaid
+      - MobiKwik Zip
+      - Simpl
+
+  - id: DEBT_CREDIT_CARD_BILL
+    display_name: Credit Card Bill Payment
+    description: Credit card statement payments and card bill auto-debits.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DEBT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NETBANKING, UPI, AUTOPAY]
+    instrument_tags: [NETBANKING, UPI, NACH]
+    mcc_hints: [6011, 6012]
+    upi_merchant_bucket: CARD_BILL
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - card bill
+      - credit card payment
+      - statement payment
+      - sbi card
+      - axis bank card
+      - hdfc bank card
+      - icici bank card
+    example_merchants:
+      - SBI Card
+      - HDFC Bank Credit Cards
+      - Axis Bank Credit Cards
+
+  - id: DEBT_COLLECTION_AGENCY
+    display_name: Debt Collection & Recovery
+    description: Collection agency payments, recovery settlements and overdue charges.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DEBT
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [NETBANKING, UPI]
+    instrument_tags: [NETBANKING, UPI]
+    mcc_hints: [6012]
+    upi_merchant_bucket: DEBT_COLLECTION
+    risk_tags: ["HIGH_RISK"]
+    tax_relevant: false
+    keywords:
+      - collection
+      - recovery
+      - overdue
+      - past due
+      - settlement
+    example_merchants:
+      - Collection Agencies
+      - Recovery Partners
+
+  - id: INVEST_MF_SIP
+    display_name: Investments – Mutual Funds & SIP
+    description: Mutual fund SIPs and lump-sum purchases via brokers or AMC portals.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: INVESTMENT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [AUTOPAY, NETBANKING, UPI]
+    instrument_tags: [NETBANKING, UPI]
+    mcc_hints: [6211]
+    upi_merchant_bucket: INVESTMENTS
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - sip
+      - mutual fund
+      - lump sum
+      - amc
+      - folio
+      - nav
+      - kfintech
+      - cams
+      - groww
+      - zerodha coin
+    example_merchants:
+      - Groww
+      - Zerodha Coin
+      - CAMS
+      - KFintech
+
+  - id: INVEST_STOCK_BROKERAGE
+    display_name: Investments – Stocks & Brokerage
+    description: Stock trades, brokerage fees, DP charges and margin interest.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: INVESTMENT
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [NETBANKING, ONLINE]
+    instrument_tags: [NETBANKING, UPI]
+    mcc_hints: [6211]
+    upi_merchant_bucket: INVESTMENTS
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - brokerage
+      - dp charges
+      - stt
+      - stamp duty
+      - margin interest
+      - kite
+      - upstox
+      - angel one
+      - icici direct
+      - hdfc securities
+    example_merchants:
+      - Zerodha
+      - Upstox
+      - ICICI Direct
+      - HDFC Securities
+
+  - id: INVEST_GOLD_SILVER
+    display_name: Investments – Gold & Silver
+    description: Digital gold, coins, bars, and jewellery bought as investment.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: INVESTMENT
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE, IN_PERSON]
+    instrument_tags: [CARD, UPI, NETBANKING]
+    mcc_hints: [5944]
+    upi_merchant_bucket: INVESTMENTS
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - digital gold
+      - mmtc-pamp
+      - augmont
+      - tanishq
+      - kalyan
+      - malabar
+      - gold coin
+      - silver bar
+    example_merchants:
+      - MMTC-PAMP
+      - Tanishq
+      - Kalyan Jewellers
+
+  - id: INVEST_RETIREMENT
+    display_name: Retirement & Long-Term Savings
+    description: NPS, PPF, EPF voluntary contributions and similar retirement products.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: INVESTMENT
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NETBANKING, AUTOPAY]
+    instrument_tags: [NETBANKING]
+    mcc_hints: [6211]
+    upi_merchant_bucket: INVESTMENTS
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - nps
+      - ppf
+      - public provident fund
+      - epf
+      - vpf
+      - pension fund
+    example_merchants:
+      - NPS Trust
+      - EPFO
+
+  - id: INSURANCE_PREMIUM_LIFE
+    display_name: Insurance – Life
+    description: Life insurance premiums and term plan renewals.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NETBANKING, AUTOPAY, CARD]
+    instrument_tags: [NETBANKING, CARD, NACH]
+    mcc_hints: [6300]
+    upi_merchant_bucket: INSURANCE
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - life insurance
+      - term plan
       - lic
       - sbi life
       - hdfc life
       - icici prudential
-      - mutual fund
-      - sip
-      - broker
-      - demat
-      - convenience fee
-      - processing fee
-      - platform fee
-      - chargeback
-      - reversal
-      - fastag
-      - service charge
+      - premium
+      - policy
     example_merchants:
       - LIC of India
-      - PolicyBazaar
-      - Zerodha
-      - Groww
-  - id: FEES
-    display_name: Fees & Adjustments
-    description: Network charges, card convenience fees, platform fees, and surcharge reversals.
+      - HDFC Life
+      - SBI Life
+
+  - id: INSURANCE_PREMIUM_HEALTH
+    display_name: Insurance – Health
+    description: Health and mediclaim insurance premiums.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NETBANKING, AUTOPAY, CARD]
+    instrument_tags: [NETBANKING, CARD, NACH]
+    mcc_hints: [6300]
+    upi_merchant_bucket: INSURANCE
+    risk_tags: []
+    tax_relevant: true
     keywords:
-      - convenience fee
-      - processing fee
-      - platform fee
-      - surcharge
-      - surcharge reversal
-      - service charge
-      - chargeback
-      - dispute
-      - charge reversal
-      - fee refund
-      - fastag
+      - health insurance
+      - mediclaim
+      - floater
+      - health cover
     example_merchants:
-      - NPCI
-      - FASTag Issuer
-      - Payment Gateway
-      - Card Network
-  - id: HOME_IMPROVEMENT
-    display_name: Home Improvement & Furnishings
-    description: Furniture, hardware, appliances, and home décor merchants.
+      - Star Health
+      - Max Bupa
+
+  - id: INSURANCE_PREMIUM_MOTOR
+    display_name: Insurance – Motor
+    description: Car and two-wheeler insurance premiums.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [NETBANKING, AUTOPAY, CARD]
+    instrument_tags: [NETBANKING, CARD, NACH]
+    mcc_hints: [6300]
+    upi_merchant_bucket: INSURANCE
+    risk_tags: []
+    tax_relevant: true
     keywords:
-      - ikea
-      - hometown
-      - pepperfry
-      - urban ladder
-      - home centre
-      - home center
-      - decor
-      - furnishing
-      - hardware
-      - paints
-      - asian paints
-      - berger paints
-      - plywood
-      - tile
-      - sanitaryware
+      - motor insurance
+      - car insurance
+      - bike insurance
+      - vehicle insurance
     example_merchants:
-      - IKEA India
-      - Pepperfry
-      - Asian Paints
-      - Urban Ladder
+      - ICICI Lombard
+      - Bajaj Allianz
+
+  # ---------------------------------------------------------------------------
+  # GOVERNMENT, TAXES & FEES
+  # ---------------------------------------------------------------------------
+  - id: GOVT_TAXES_DIRECT
+    display_name: Direct Taxes – Income Tax & TDS
+    description: Income tax, advance tax, self-assessment tax and TDS payments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [NETBANKING]
+    instrument_tags: [NETBANKING, NEFT]
+    mcc_hints: [9311]
+    upi_merchant_bucket: TAXES
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - income tax
+      - incometaxindia
+      - challan 280
+      - self assessment tax
+      - advance tax
+      - tds
+      - nsdl
+    example_merchants:
+      - Income Tax Department
+      - NSDL
+
+  - id: GOVT_TAXES_INDIRECT
+    display_name: Indirect Taxes – GST & Others
+    description: GST, professional tax and other indirect tax payments.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [NETBANKING]
+    instrument_tags: [NETBANKING]
+    mcc_hints: [9311]
+    upi_merchant_bucket: TAXES
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - gst
+      - goods and services tax
+      - professional tax
+      - ptax
+      - state tax
+    example_merchants:
+      - GSTN
+      - State Tax Departments
+
+  - id: GOVT_FEES_PENALTIES
+    display_name: Government Fees & Penalties
+    description: Traffic challans, exam fees, court fees and other penalties.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE, NETBANKING]
+    instrument_tags: [NETBANKING, CARD, UPI]
+    mcc_hints: [9222, 9399]
+    upi_merchant_bucket: GOVT
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - challan
+      - e-challan
+      - parivahan
+      - rto
+      - traffic fine
+      - exam fee
+      - court fee
+    example_merchants:
+      - Parivahan
+      - State Police Portals
+
+  # ---------------------------------------------------------------------------
+  # TRANSFERS & INTERNAL MOVES
+  # ---------------------------------------------------------------------------
+  - id: TRANSFER_P2P_FAMILY_FRIENDS
+    display_name: P2P Transfers – Family & Friends
+    description: Person-to-person transfers to family, friends and individuals.
+    group: TRANSFER
+    primary: true
+    parent_id: null
+    budget_bucket: INTERNAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [UPI, IMPS, NEFT]
+    instrument_tags: [UPI, IMPS, NEFT]
+    mcc_hints: []
+    upi_merchant_bucket: P2P
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - to father
+      - to mother
+      - to wife
+      - to husband
+      - to friend
+      - to brother
+      - to sister
+      - pocket money
+      - birthday gift
+      - festival gift
+      - gift transfer
+    example_merchants:
+      - UPI P2P Contacts
+
+  - id: TRANSFER_SELF_INTERNAL
+    display_name: Internal Transfers – Own Accounts
+    description: Transfers between own accounts, wallets and brokerage.
+    group: TRANSFER
+    primary: true
+    parent_id: null
+    budget_bucket: INTERNAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [UPI, NEFT, NETBANKING]
+    instrument_tags: [UPI, NEFT, NETBANKING]
+    mcc_hints: []
+    upi_merchant_bucket: SELF
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - self transfer
+      - own account
+      - to self
+      - wallet load
+      - add money
+      - top up
+    example_merchants:
+      - Paytm Wallet
+      - PhonePe Wallet
+      - Amazon Pay
+
+  - id: TRANSFER_CASH_WITHDRAWAL
+    display_name: Cash Withdrawals & Deposits
+    description: ATM cash withdrawals and branch cash transactions.
+    group: TRANSFER
+    primary: true
+    parent_id: null
+    budget_bucket: INTERNAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ATM, BRANCH]
+    instrument_tags: [CASH]
+    mcc_hints: [6011]
+    upi_merchant_bucket: CASH
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - atm withdrawal
+      - cash withdrawal
+      - cash deposit
+      - cdm
+      - branch withdrawal
+    example_merchants:
+      - Bank ATMs
+      - Bank Branches
+
+  - id: TRANSFER_FOREX
+    display_name: Forex & International Transfers
+    description: International remittances, forex card loads and currency conversion.
+    group: TRANSFER
+    primary: true
+    parent_id: null
+    budget_bucket: INTERNAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [NETBANKING, NEFT, RTGS]
+    instrument_tags: [NETBANKING, NEFT, RTGS]
+    mcc_hints: []
+    upi_merchant_bucket: FOREX
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - forex
+      - fx
+      - swift
+      - wire transfer
+      - remit
+      - wise
+      - remitly
+      - nre
+      - nro
+    example_merchants:
+      - Wise
+      - Remitly
+      - Bank forex services
+
+  # ---------------------------------------------------------------------------
+  # DIGITAL SUBSCRIPTIONS & SAAS
+  # ---------------------------------------------------------------------------
   - id: SUBSCRIPTIONS
     display_name: Digital Subscriptions & SaaS
     description: Recurring software, productivity, and cloud subscriptions.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: true
+    channel_tags: [SUBSCRIPTION, ONLINE, AUTOPAY]
+    instrument_tags: [CARD, NETBANKING]
+    mcc_hints: [4899, 5817]
+    upi_merchant_bucket: SUBSCRIPTIONS
+    risk_tags: []
+    tax_relevant: true
     keywords:
       - subscription
       - renewal
@@ -442,9 +1491,58 @@ labels:
       - Google Workspace
       - Adobe Creative Cloud
       - Zoom
+
+  # ---------------------------------------------------------------------------
+  # FEES, CHARITY, MISC
+  # ---------------------------------------------------------------------------
+  - id: FEES
+    display_name: Fees & Adjustments
+    description: Network charges, card convenience fees, platform fees, and surcharge reversals.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [CARD, NETBANKING]
+    instrument_tags: [CARD, NETBANKING]
+    mcc_hints: [6012, 6051]
+    upi_merchant_bucket: FEES
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - convenience fee
+      - processing fee
+      - platform fee
+      - surcharge
+      - surcharge reversal
+      - service charge
+      - chargeback
+      - dispute
+      - charge reversal
+      - fee refund
+      - fastag
+    example_merchants:
+      - NPCI
+      - FASTag Issuer
+      - Payment Gateway
+      - Card Network
+
   - id: CHARITY
     display_name: Charity & Donations
     description: NGO, charity, and donation payments including crowdfunding.
+    group: EXPENSE
+    primary: true
+    parent_id: null
+    budget_bucket: DISCRETIONARY
+    default_direction: DEBIT
+    default_recurring: false
+    channel_tags: [ONLINE, IN_PERSON]
+    instrument_tags: [UPI, NETBANKING, CARD]
+    mcc_hints: [8398]
+    upi_merchant_bucket: CHARITY
+    risk_tags: []
+    tax_relevant: true
     keywords:
       - donation
       - charity
@@ -461,24 +1559,147 @@ labels:
       - Milaap
       - Ketto
       - Akshaya Patra Foundation
-  - id: INCOME
-    display_name: Income & Refunds
-    description: Salary credits, tax refunds, expense reimbursements, and cashback adjustments.
+
+  # ---------------------------------------------------------------------------
+  # INCOME & INFLOWS
+  # ---------------------------------------------------------------------------
+  - id: INCOME_SALARY
+    display_name: Income – Salary & Wages
+    description: Monthly salary, wages, stipend and employer reimbursements.
+    group: INCOME
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: CREDIT
+    default_recurring: true
+    channel_tags: [SALARY, NEFT, RTGS]
+    instrument_tags: [NEFT, RTGS]
+    mcc_hints: []
+    upi_merchant_bucket: INCOME
+    risk_tags: []
+    tax_relevant: true
     keywords:
       - salary
       - payroll
       - stipend
-      - reimbursement
-      - refund
-      - cashback
-      - reversal
-      - credit salary
-      - treasury
-      - income tax
-      - tds refund
+      - salary credit
+      - hra
+      - employer reimbursement
     example_merchants:
       - Employer Payroll
-      - Income Tax Department
       - Corporate Expense Desk
+
+  - id: INCOME_BUSINESS_SELF_EMPLOYED
+    display_name: Income – Business & Self-Employed
+    description: Customer payments, payment gateway settlements and payouts.
+    group: INCOME
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: CREDIT
+    default_recurring: false
+    channel_tags: [NEFT, RTGS, IMPS]
+    instrument_tags: [NEFT, RTGS, IMPS]
+    mcc_hints: []
+    upi_merchant_bucket: INCOME
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - payout
+      - settlement
+      - razorpay
+      - cashfree
+      - instamojo
+      - stripe
+      - invoice payment
+    example_merchants:
+      - Razorpay
+      - Cashfree
+      - Stripe
+
+  - id: INCOME_INVESTMENT
+    display_name: Income – Investments
+    description: Dividends, interest income and fund redemptions.
+    group: INCOME
+    primary: true
+    parent_id: null
+    budget_bucket: INVESTMENT
+    default_direction: CREDIT
+    default_recurring: false
+    channel_tags: [NEFT, NETBANKING]
+    instrument_tags: [NEFT, NETBANKING]
+    mcc_hints: []
+    upi_merchant_bucket: INCOME
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - dividend
+      - interest
+      - fd interest
+      - rd interest
+      - redemption
+      - swp payout
+    example_merchants:
+      - Mutual Fund AMCs
+      - Banks – Term Deposits
+
+  - id: INCOME_REFUNDS
+    display_name: Income – Refunds & Chargebacks
+    description: E-commerce refunds, chargebacks, card reversals and adjustments.
+    group: INCOME
+    primary: true
+    parent_id: null
+    budget_bucket: INTERNAL
+    default_direction: CREDIT
+    default_recurring: false
+    channel_tags: [CARD, NETBANKING, UPI]
+    instrument_tags: [CARD, NETBANKING, UPI]
+    mcc_hints: []
+    upi_merchant_bucket: INCOME
+    risk_tags: []
+    tax_relevant: false
+    keywords:
+      - refund
+      - refunds
+      - cashback
+      - cash back
+      - reversal
+      - chargeback
+      - dispute reversal
+      - failed txn refund
+      - failed transaction refund
+      - refund processed
+    example_merchants:
+      - Amazon India
+      - Flipkart
+      - Card Network
+
+  - id: INCOME_GOVT_BENEFIT
+    display_name: Income – Government Benefits
+    description: Subsidies, scholarships, DBT credits, pensions and tax refunds.
+    group: INCOME
+    primary: true
+    parent_id: null
+    budget_bucket: ESSENTIAL
+    default_direction: CREDIT
+    default_recurring: false
+    channel_tags: [NEFT]
+    instrument_tags: [NEFT]
+    mcc_hints: [9399]
+    upi_merchant_bucket: INCOME
+    risk_tags: []
+    tax_relevant: true
+    keywords:
+      - dbt
+      - direct benefit transfer
+      - pm-kisan
+      - scholarship
+      - pension
+      - pf withdrawal
+      - epfo
+    example_merchants:
+      - Govt of India – DBT
+      - EPFO
+
 fallback: OTHER
 fallback_description: Miscellaneous transactions that do not match any specific category.

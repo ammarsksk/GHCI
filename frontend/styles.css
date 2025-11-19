@@ -134,6 +134,35 @@ body {
   font-weight: 600;
   margin-top: 0.15rem;
 }
+.hero-actions {
+  margin-top: 0.6rem;
+}
+
+.link-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.95rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #f9fafb;
+  font-size: 0.8rem;
+  gap: 0.3rem;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+}
+
+a.link-pill:link,
+a.link-pill:visited {
+  color: #f9fafb;
+  text-decoration: none;
+}
+
+.link-pill:hover {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #f9fafb;
+  box-shadow: 0 16px 35px rgba(59, 130, 246, 0.55);
+}
 
 .form-row {
   margin-bottom: 0.75rem;
@@ -523,18 +552,24 @@ button.tiny {
   border-radius: 0;
 }
 
+/* Keep Execution details looking neutral in all states */
+.log-header,
+.log-header:hover,
+.log-header:focus,
+.log-header:active {
+  background: transparent !important;
+  color: #a5b4fc;
+  box-shadow: none !important;
+  transform: none !important;
+  outline: none;
+}
+
 .log-header-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
   transition: transform 0.12s ease-out;
-}
-
-.log-header:hover {
-  color: #c7d2fe;
-  box-shadow: none;
-  transform: none;
 }
 
 .log-header.open .log-header-icon {
@@ -598,6 +633,60 @@ td:nth-child(2) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+tr.metrics-summary td {
+  font-weight: 600;
+}
+
+/* Confusion matrix styling */
+.cmatrix-table {
+  width: auto;
+  border-collapse: separate;
+  border-spacing: 4px;
+  margin-top: 0.6rem;
+}
+
+.cmatrix-table th,
+.cmatrix-table td {
+  border: none;
+  text-align: center;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.cmatrix-table thead th {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.cmatrix-table tbody th {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #e5e7eb;
+}
+
+.cmatrix-table tbody td {
+  min-width: 44px;
+  height: 32px;
+  border-radius: 0.35rem;
+  background: #020617;
+  color: #64748b;
+}
+
+.cmatrix-table td.c-high {
+  background: radial-gradient(circle at top left, #22c55e 0, #166534 70%);
+  color: #ecfdf5;
+}
+
+.cmatrix-table td.c-med {
+  background: radial-gradient(circle at top left, #4b5563 0, #020617 80%);
+  color: #e5e7eb;
+}
+
+.cmatrix-table td.c-low {
+  background: #020617;
+  color: #64748b;
 }
 
 .batch-grid {
