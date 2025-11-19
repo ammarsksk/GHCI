@@ -565,19 +565,3 @@ Contributions (taxonomy tweaks, better heuristics, new front‑end panels, integ
 
 ---
 
-## Roadmap
-
-- Add multilingual support (e.g. Hindi, regional languages, non‑Latin scripts).
-- Plug in deep sequence models behind the same API (keeping current pipeline as a fast baseline).
-- Online learning: incorporate user feedback from the UI into incremental training.
-- Monitoring panel for production deployments (drift detection, label distribution, etc.).
-- Pluggable storage for batch results (S3, databases) instead of local files.
-
----
-
-## License
-
-License: **TBD**
-
-(Add a `LICENSE` file – e.g. MIT, Apache‑2.0, or a custom internal license – and update this section accordingly.)
-
