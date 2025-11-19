@@ -567,7 +567,4 @@ Simple manual checks:
 - `python -m src.synthetic_data --train-size 10000 --test-size 5000` to verify data generation.
 - `python -m src.train_eval_v7_faststack --coarse-trainer sgd --n-jobs -1 --bucket-workers -1 --predict-workers -1 --threshold-workers -1 --chunk-size 25000 --disable-review --save-model` to verify training.
 - `uvicorn src.app_api:app --reload` + `celery -A src.celery_app:celery_app worker -l info` to run the full stack.
-
-Contributions (taxonomy tweaks, better heuristics, new front‑end panels, integrations) are welcome.
-
 ---
