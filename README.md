@@ -4,6 +4,13 @@ On‑prem, explainable transaction categorisation for bank, card, and UPI statem
 
 ---
 
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi&logoColor=white)
+![Celery](https://img.shields.io/badge/Celery-5.5+-67b045?logo=celery&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-7.x-DC382D?logo=redis&logoColor=white)
+![scikit--learn](https://img.shields.io/badge/scikit--learn-1.3+-f7931e?logo=scikitlearn&logoColor=white)
+![Vanilla JS](https://img.shields.io/badge/Frontend-Vanilla%20JS%20%2B%20HTML%2FCSS-646cff?logo=javascript&logoColor=white)
+
 ## Overview
 
 TXCAT is an end‑to‑end stack for automatically classifying raw transaction narratives (e.g. `AMEX SWIGGY JAIPUR REF CARD614755`) into rich financial categories such as `DINING`, `GROCERIES`, `UTILITIES_TELECOM`, `DEBT_LOAN_HOME`, `INVEST_MF_SIP`, `PETS`, and more.
@@ -564,4 +571,3 @@ Simple manual checks:
 Contributions (taxonomy tweaks, better heuristics, new front‑end panels, integrations) are welcome.
 
 ---
-
