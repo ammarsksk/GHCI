@@ -14,7 +14,7 @@ from fastapi import (
     UploadFile,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -228,5 +228,6 @@ def download_result(job_id: str):
 
 
 @app.get("/")
-def root() -> Dict[str, str]:
-    return {"message": "txcat API is running. Open /app for the web UI if configured."}
+def root() -> RedirectResponse:
+    # Redirect root hits to the web console so the default clickable URL works.
+    return RedirectResponse(url="/app", status_code=307)

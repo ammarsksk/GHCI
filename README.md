@@ -336,7 +336,7 @@ docker start redis
 From the repo root, in a venv:
 
 ```bash
-uvicorn src.app_api:app --host 0.0.0.0 --port 8000 --reload
+uvicorn src.app_api:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 - Root health check: `http://localhost:8000/`
